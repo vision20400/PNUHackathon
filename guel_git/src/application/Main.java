@@ -18,6 +18,7 @@ public class Main extends Application {
 			
 			primaryStage.setTitle("GUEL");
 			//i am hyo eun
+			//mapping 2
 			primaryStage.setScene(scene);
 			primaryStage.show();
 		} catch(Exception e) {
