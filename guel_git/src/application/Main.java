@@ -17,7 +17,7 @@ public class Main extends Application {
 			Scene scene = new Scene(mainLayoutBorderPane);
 			
 			primaryStage.setTitle("GUEL");
-			
+			//i am hyo eun
 			primaryStage.setScene(scene);
 			primaryStage.show();
 		} catch(Exception e) {
