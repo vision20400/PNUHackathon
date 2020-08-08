@@ -5,14 +5,14 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.io.FileWriter;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -30,12 +30,13 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.print.PrinterJob;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
@@ -46,9 +47,10 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
-import javafx.scene.web.HTMLEditor;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import javafx.scene.control.Alert.AlertType;
 
 
 public class MainController implements Initializable {
@@ -74,6 +76,14 @@ public class MainController implements Initializable {
 	private Button btnAlert;
 	@FXML
 	private Button loadbtn;
+	@FXML
+	private Button binderbtn;
+	@FXML
+	private Button newFilebtn;
+	@FXML
+	private Button mappingbtn;
+	@FXML
+	private SplitPane split;
 	
 	private String LoadPath;
 	
@@ -84,7 +94,7 @@ public class MainController implements Initializable {
 	public MainController() {
         treeV = new TreeView<>();
         treeV.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        service = Executors.newFixedThreadPool(5);
+        service = Executors.newFixedThreadPool(3);
     }
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -112,12 +122,30 @@ public class MainController implements Initializable {
                 treeV.setCellFactory((TreeView<PathItem> p) -> {
                 	final PathTreeCell cell = new PathTreeCell(messageProp);
                     setDragDropEvent(cell);
-                    //set
                     return cell;
                 });
             }
         
 	   });
+		
+		//파일트리 숨기기,보이기
+		binderbtn.setOnAction((event) -> {
+			if(split.getDividerPositions()[0] <= 0.1)
+				split.setDividerPositions(0.2);
+			else
+				split.setDividerPositions(0.0);
+		});
+		
+		//새파일 추가
+		newFilebtn.setOnAction((event) -> {
+			Tab tab = new Tab();
+		    tab.setText("untitled"); //*.txt
+		    TextArea textArea = new TextArea();
+		    textArea.appendText("");
+		    tab.setContent(textArea);
+		    mainTab.getTabs().add(tab);
+		});
+		
 		//파일 오픈
 		openFile.setOnAction(new EventHandler<ActionEvent>() {
 		    public void handle(ActionEvent event) {
@@ -130,13 +158,11 @@ public class MainController implements Initializable {
 		});
 		//새파일 추가
 		newFile.setOnAction((event) -> {
-			final HTMLEditor htmlEditor = new HTMLEditor();
-	        htmlEditor.setPrefHeight(245);
 			Tab tab = new Tab();
 		    tab.setText("untitled"); //*.txt
-		    //TextArea textArea = new TextArea();
-		    //textArea.appendText("");
-		    tab.setContent(htmlEditor);
+		    TextArea textArea = new TextArea();
+		    textArea.appendText("");
+		    tab.setContent(textArea);
 		    mainTab.getTabs().add(tab);
 		});
 		//저장
@@ -175,14 +201,15 @@ public class MainController implements Initializable {
 			
 			*/
 		});
-		//트리 아이템 두번  클릭시
-		treeV.setOnMouseClicked(new EventHandler<MouseEvent>()
+		//트리 아이템 두번  클릭시 -아직 구현 ㄴ
+		treeV.setOnMousePressed(new EventHandler<MouseEvent>()
 		{
 		    @Override
 		    public void handle(MouseEvent mouseEvent)
 		    {            
-		        if(mouseEvent.getClickCount() == 2){
-		        	TreeItem<PathItem> item = treeV.getSelectionModel().getSelectedItem();
+		        if(mouseEvent.getClickCount() == 2)
+		        {
+		            TreeItem<PathItem> item = treeV.getSelectionModel().getSelectedItem();
 		            String clickpath = getTreePath(item);
 		            System.out.println("Selected Text : " + clickpath);
 		            openNewTab(clickpath); 

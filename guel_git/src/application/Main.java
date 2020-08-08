@@ -15,9 +15,9 @@ public class Main extends Application {
 			loader.setLocation(getClass().getResource("templete.fxml"));
 			BorderPane mainLayoutBorderPane = (BorderPane) loader.load();
 			Scene scene = new Scene(mainLayoutBorderPane);
+			scene.getStylesheets().add("/application/style.css");
 			
 			primaryStage.setTitle("GUEL");
-			//asfasfasfasf
 			primaryStage.setScene(scene);
 			primaryStage.show();
 		} catch(Exception e) {

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.text.Font?>
@@ -33,22 +35,12 @@
                 </Menu>
               </menus>
             </MenuBar>
-            <Accordion>
-              <panes>
-                <TitledPane animated="false" text="menu">
-                  <content>
-                        <ToolBar prefHeight="40.0" prefWidth="200.0">
-                          <items>
-                            <Button mnemonicParsing="false" text="Button" />
-                          </items>
-                        </ToolBar>
-                  </content>
-                </TitledPane>
-              </panes>
-            </Accordion>
             <ToolBar>
                <items>
-                  <Button fx:id="loadbtn" mnemonicParsing="false" prefHeight="23.0" prefWidth="151.0" text="load Folder" />
+                  <Button fx:id="binderbtn" mnemonicParsing="false" prefHeight="23.0" prefWidth="91.0" text="binder" />
+                  <Button fx:id="newFilebtn" mnemonicParsing="false" prefHeight="23.0" prefWidth="91.0" text="new file" />
+                  <Button fx:id="loadbtn" mnemonicParsing="false" prefHeight="23.0" prefWidth="91.0" text="load Folder" />
+                  <Button fx:id="mappingbtn" mnemonicParsing="false" prefHeight="23.0" prefWidth="91.0" text="mapping" />
                   <TextField fx:id="txtMsg" prefHeight="23.0" prefWidth="57.0" />
                   <Button fx:id="btnAlert" mnemonicParsing="false" onAction="#clickHandler" prefHeight="23.0" prefWidth="57.0" text="Alert" />
                   <Region prefHeight="27.0" prefWidth="14.0" />
@@ -67,31 +59,26 @@
                   <Button mnemonicParsing="false" prefHeight="23.0" prefWidth="20.0" text="Button" />
                   <Button mnemonicParsing="false" prefHeight="23.0" prefWidth="20.0" text="Button" />
                   <Region prefHeight="27.0" prefWidth="59.0" />
-                  <Button mnemonicParsing="false" text="Button" />
-                  <Button mnemonicParsing="false" text="Button" />
                </items>
             </ToolBar>
          </children>
       </VBox>
    </top>
-   <bottom>
-      <HBox BorderPane.alignment="CENTER">
-         <children>
-            <Label text="Label" />
-         </children>
-      </HBox>
-   </bottom>
    <center>
-      <SplitPane dividerPositions="0.16815144766146994, 0.6158129175946548" prefHeight="160.0" prefWidth="200.0">
+      <SplitPane fx:id="split" dividerPositions="0.2, 0.7">
         <items>
-            <SplitPane orientation="VERTICAL" prefWidth="141.0">
-              <items>
-                  <TreeView fx:id="treeV" prefHeight="516.0" prefWidth="141.0" />
-              </items>
-            </SplitPane>
-            <TabPane fx:id="mainTab" prefHeight="516.0" prefWidth="185.0" tabClosingPolicy="UNAVAILABLE">
+            <AnchorPane>
+               <children>
+                  <TreeView fx:id="treeV" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+               </children>
+            </AnchorPane>
+            <AnchorPane>
+               <children>
+                  <TabPane fx:id="mainTab" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             </TabPane>
-            <ScrollPane prefHeight="200.0" prefWidth="585.0" />
+               </children>
+            </AnchorPane>
+            <AnchorPane />
         </items>
       </SplitPane>
    </center>
