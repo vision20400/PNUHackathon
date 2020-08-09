@@ -159,7 +159,7 @@ public class PathTreeCell extends TreeCell<PathItem>{
         MenuItem deleteMenu =new MenuItem("Delete");
         deleteMenu.setOnAction((ActionEvent event) -> {
             ObjectProperty<TreeItem<PathItem>> prop = new SimpleObjectProperty<>();
-            //new ModalDialog(owner, getTreeItem(), prop);
+            new ModalDialog(getTreeItem(), prop);
             prop.addListener((ObservableValue<? extends TreeItem<PathItem>> ov, TreeItem<PathItem> oldItem, TreeItem<PathItem> newItem) -> {
                 try {
                     Files.walkFileTree(newItem.getValue().getPath(), new VisitorForDelete());
@@ -178,17 +178,9 @@ public class PathTreeCell extends TreeCell<PathItem>{
         rename.setOnAction(new EventHandler<ActionEvent>() {
         	//rename the file
         	public void handle(ActionEvent t) {
-        		/*Path renamefile = renamethefile();
-        		if(renamefile != null) {
-        			TreeItem<PathItem> renaming = PathTreeItem.r
-        		}*/       		       		
-        	}/*
-        	private Path renamethefile() {
-        		Path refile = null;
-        		Path path = getTreeItem().getValue().getPath();
-                refile = Paths.get(path.toAbsolutePath().toString(), "rename.txt");
-                Files.
-        	}*/
+        		startEdit();
+        	}
+        	
         });
         MenuItem copy = new MenuItem("copy");
         copy.setOnAction(new EventHandler<ActionEvent>() {

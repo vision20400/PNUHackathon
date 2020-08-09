@@ -13,13 +13,14 @@ import javafx.stage.StageStyle;
 
 public class ModalDialog {
 
-    public ModalDialog(Stage owner, final TreeItem<PathItem> treeItem, final ObjectProperty<TreeItem<PathItem>> prop) {
+    public ModalDialog(final TreeItem<PathItem> treeItem, final ObjectProperty<TreeItem<PathItem>> prop) {
         final Stage dialog = new Stage(StageStyle.UTILITY);
-        dialog.initOwner(owner);
         dialog.initModality(Modality.APPLICATION_MODAL);
         GridPane root = new GridPane();
-        root.setPadding(new Insets(30));
-        root.setHgap(5);
+        root.setPadding(new Insets(20));
+        root.setPrefHeight(100);
+        root.setPrefWidth(170);
+        root.setHgap(20);
         root.setVgap(10);
         Label label = new Label("Are you sure?");
         Button okButton = new Button("OK");
