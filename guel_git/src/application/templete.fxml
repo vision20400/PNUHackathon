@@ -53,7 +53,7 @@
                      <graphic>
                         <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@images/binder.png" />
+                              <Image url="@../../images/binder.png" />
                            </image>
                         </ImageView>
                      </graphic></Button>
@@ -61,7 +61,7 @@
                      <graphic>
                         <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@images/newfile.png" />
+                              <Image url="@../../images/newfile.png" />
                            </image>
                         </ImageView>
                      </graphic></Button>
@@ -69,7 +69,7 @@
                      <graphic>
                         <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@images/loadfolder.png" />
+                              <Image url="@../../images/loadfolder.png" />
                            </image>
                         </ImageView>
                      </graphic></Button>
@@ -77,7 +77,7 @@
                      <graphic>
                         <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@images/mapping.png" />
+                              <Image url="@../../images/mapping.png" />
                            </image>
                         </ImageView>
                      </graphic></Button>
