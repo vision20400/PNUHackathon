@@ -1,14 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.text.*?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-<?import javafx.scene.layout.*?>
-<?import java.lang.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MainController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MainController">
    <top>
       <VBox BorderPane.alignment="CENTER">
          <children>
@@ -37,10 +49,38 @@
             </MenuBar>
             <ToolBar>
                <items>
-                  <Button fx:id="binderbtn" mnemonicParsing="false" prefHeight="23.0" prefWidth="91.0" text="binder" />
-                  <Button fx:id="newFilebtn" mnemonicParsing="false" prefHeight="23.0" prefWidth="91.0" text="new file" />
-                  <Button fx:id="loadbtn" mnemonicParsing="false" prefHeight="23.0" prefWidth="91.0" text="load Folder" />
-                  <Button fx:id="mappingbtn" mnemonicParsing="false" prefHeight="23.0" prefWidth="91.0" text="mapping" />
+                  <Button fx:id="binderbtn" mnemonicParsing="false">
+                     <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../images/binder.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></Button>
+                  <Button fx:id="newFilebtn" mnemonicParsing="false">
+                     <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../images/newfile.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></Button>
+                  <Button fx:id="loadbtn" mnemonicParsing="false">
+                     <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../images/loadfolder.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></Button>
+                  <Button fx:id="mappingbtn" mnemonicParsing="false">
+                     <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../images/mapping.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></Button>
                   <TextField fx:id="txtMsg" prefHeight="23.0" prefWidth="57.0" />
                   <Button fx:id="btnAlert" mnemonicParsing="false" onAction="#clickHandler" prefHeight="23.0" prefWidth="57.0" text="Alert" />
                   <Region prefHeight="27.0" prefWidth="14.0" />
