@@ -81,8 +81,6 @@
                            </image>
                         </ImageView>
                      </graphic></Button>
-                  <TextField fx:id="txtMsg" prefHeight="23.0" prefWidth="57.0" />
-                  <Button fx:id="btnAlert" mnemonicParsing="false" onAction="#clickHandler" prefHeight="23.0" prefWidth="57.0" text="Alert" />
                   <Region prefHeight="27.0" prefWidth="14.0" />
                   <Label text="text">
                      <font>
@@ -118,7 +116,19 @@
             </TabPane>
                </children>
             </AnchorPane>
-            <AnchorPane />
+            <AnchorPane>
+               <children>
+                  <BorderPane fx:id="mapping" prefHeight="525.0" prefWidth="266.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <top>
+                        <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                          <items>
+                              <TextField fx:id="txtMsg" prefHeight="23.0" prefWidth="57.0" />
+                            <Button fx:id="labelCell" mnemonicParsing="false" onAction="#clickHandler" text="label" />
+                          </items>
+                        </ToolBar>
+                     </top>
+                  </BorderPane>
+               </children></AnchorPane>
         </items>
       </SplitPane>
    </center>
