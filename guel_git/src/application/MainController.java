@@ -158,6 +158,14 @@ public class MainController implements Initializable {
 		    mainTab.getTabs().add(tab);
 		});
 		
+		//¸ÊÇÎ ¼û±â±â,º¸ÀÌ±â
+		mappingbtn.setOnAction((event) -> {
+			if(split.getDividerPositions()[1] >= 0.9)
+				split.setDividerPositions(split.getDividerPositions()[0], 0.8);
+			else
+				split.setDividerPositions(split.getDividerPositions()[0], 0.9764705882352941);
+		});
+		
 		//ÆÄÀÏ ¿ÀÇÂ
 		openFile.setOnAction(new EventHandler<ActionEvent>() {
 		    public void handle(ActionEvent event) {
