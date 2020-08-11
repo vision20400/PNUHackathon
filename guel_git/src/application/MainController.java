@@ -47,9 +47,13 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import test.CellType;
+import test.Graph;
+import test.Model;
 import javafx.scene.control.Alert.AlertType;
 
 
@@ -73,7 +77,7 @@ public class MainController implements Initializable {
 	@FXML
 	private TextField txtMsg;
 	@FXML
-	private Button btnAlert;
+	private Button labelCell;
 	@FXML
 	private Button loadbtn;
 	@FXML
@@ -89,6 +93,13 @@ public class MainController implements Initializable {
 	
 	private Path rootPath;
 	
+	@FXML
+	private BorderPane mapping;
+	
+	private Graph graph ;
+	
+
+	
 	private StringProperty messageProp= new SimpleStringProperty();
 	private ExecutorService service;
 	public MainController() {
@@ -99,8 +110,9 @@ public class MainController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		
-		//createTree(); 
-		
+	 
+		graph = new Graph();
+	    mapping.setCenter(graph.getScrollPane());
 		
 		
 		//디렉토리 로드 버튼 액션
@@ -310,32 +322,27 @@ public class MainController implements Initializable {
 
 	
 	
-// 그냥 버튼연습  신경 ㄴㄴ
+
 	public void clickHandler() {
 		String msg = txtMsg.getText();
 		
-		Alert alert = new Alert(AlertType.INFORMATION);
+		addGraphComponents();
+		/*Alert alert = new Alert(AlertType.INFORMATION);
 		alert.setTitle("Gondr 알림창");
 		alert.setHeaderText(null);
 		alert.setContentText(msg);
+		alert.show();*/
 		
-		alert.show();
 	}
-// 이것도 연습용 신경 ㄴㄴ
-	/*public void createTree(String... rootItems) {
-	    //create root
-	    TreeItem<String> root1 = new TreeItem<>("Root1");
-	    //root.setExpanded(true);
-	    //create child
-	    TreeItem<String> Child1 = new TreeItem<>("Child1");
-	    TreeItem<String> Child2 = new TreeItem<>("Child2");
-	    Child1.setExpanded(false);
-	    Child2.setExpanded(false);
-	    root1.getChildren().add(Child1);
-	    root1.getChildren().add(Child2);
-	    treeV.setRoot(root1);
-	}*/
 	
+	private void addGraphComponents() {
+        Model model = graph.getModel();
+
+        graph.beginUpdate();
+        model.addCell(txtMsg.getText(), CellType.LABEL);
+        graph.endUpdate();
+    }
+
 // 파일 확장자 구분 하는거 근데 filefilter에 이런 기능 있는듯
 	public static boolean FileExtension(String name) {
         String fileName = name;
