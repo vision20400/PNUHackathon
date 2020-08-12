@@ -26,23 +26,23 @@
          <children>
             <MenuBar fx:id="menu">
               <menus>
-                <Menu mnemonicParsing="false" text="File">
+                <Menu mnemonicParsing="false" text="파일">
                   <items>
-                    	<MenuItem fx:id="newFile" mnemonicParsing="false" text="newFile" />
-                        <MenuItem fx:id="openFile" mnemonicParsing="false" text="openFile" />
-                        <MenuItem fx:id="save" mnemonicParsing="false" text="save" />
-                        <MenuItem fx:id="print" mnemonicParsing="false" text="print" />
-                        <MenuItem fx:id="newWindow" mnemonicParsing="false" text="newWindow" />
+                    	<MenuItem fx:id="newFile" mnemonicParsing="false" text="새 문서" />
+                        <MenuItem fx:id="openFile" mnemonicParsing="false" text="열기" />
+                        <MenuItem fx:id="save" mnemonicParsing="false" text="저장" />
+                        <MenuItem fx:id="print" mnemonicParsing="false" text="인쇄" />
+                        <MenuItem fx:id="newWindow" mnemonicParsing="false" text="새 창" />
                   </items>    
                 </Menu>
-                <Menu mnemonicParsing="false" text="Edit">
+                <Menu mnemonicParsing="false" text="편집">
                   <items>
-                    <MenuItem mnemonicParsing="false" text="Delete" />
+                    <MenuItem mnemonicParsing="false" text="삭제" />
                   </items>
                 </Menu>
-                <Menu mnemonicParsing="false" text="Help">
+                <Menu mnemonicParsing="false" text="도움말">
                   <items>
-                    <MenuItem mnemonicParsing="false" text="About" />
+                    <MenuItem mnemonicParsing="false" text="안내" />
                   </items>
                 </Menu>
               </menus>
