@@ -7,9 +7,11 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
@@ -45,6 +47,7 @@ public class PathTreeCell extends TreeCell<PathItem>{
     private StringProperty messageProp;
     private ContextMenu dirMenu = new ContextMenu();
     private ContextMenu fileMenu = new ContextMenu();
+    private ExecutorService service;
     private static List<String> imageList;
     static {
         imageList = Arrays.asList("BMP", "DIB", "RLE", "JPG", "JPEG" , "JPE", "JFIF"
@@ -189,14 +192,35 @@ public class PathTreeCell extends TreeCell<PathItem>{
         	thread.start();
         });
         MenuItem copy = new MenuItem("copy");
-        copy.setOnAction(new EventHandler<ActionEvent>() {
-        	public void handle(ActionEvent t) {
-        		Path copyfile  = getTreeItem().getValue().getPath();
-            	if(copyfile != null) {
-            		TreeItem<PathItem> copythefile = PathTreeItem.createNode(new PathItem(copyfile));
-            		getTreeItem().getChildren().add(copythefile);
-            	}
-        	}        	
+        copy.setOnAction(event ->{
+        	Thread thread = new Thread() {
+        		public void run() {
+        			Platform.runLater(() -> {
+        				int num = 1;
+        	        	try {
+        	        		Path source = getTreeItem().getValue().getPath();
+            	        	String copyfile = getTreeItem().getValue().toString();
+            	        	System.out.println(copyfile);
+            	        	String copiedfile = copyfile.replaceFirst("(\\.[^\\.]*)?$", "-num");
+            	        	Path target = source.resolveSibling(copiedfile);
+							Files.copy(source, target, StandardCopyOption.COPY_ATTRIBUTES);
+							TreeItem<PathItem> item = PathTreeItem.createNode(new PathItem(target));
+	                        getTreeItem().getParent().getChildren().add(item);
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+        			});
+        		}
+        	};
+        	thread.start();
+        	/*
+            task.setOnSucceeded(value -> {
+                    Platform.runLater(() -> {
+                        TreeItem<PathItem> item = PathTreeItem.createNode(new PathItem(target));
+                        cell.getTreeItem().getChildren().add(item);
+                    });
+                });*/
         });
         dirMenu.getItems().addAll(expandMenu, expandAllMenu, addMenu, addtxtfile, addfile);
         fileMenu.getItems().addAll(deleteMenu, rename, copy);

@@ -411,13 +411,13 @@ public class MainController implements Initializable {
                 PathTreeCell sourceCell = (PathTreeCell) event.getGestureSource();
                 final Path sourceParentPath = sourceCell.getTreeItem().getValue().getPath().getParent();
                 if (sourceParentPath.compareTo(targetPath) != 0) {
-                    cell.setStyle("-fx-background-color: powderblue;");
+                    //cell.setStyle("-fx-background-color: powderblue;");
                 }
             }
             event.consume();
         });
         // on a Target
-        cell.setOnDragExited(event -> {
+        cell.setOnDragExited(event -> {/*
         	TreeItem<PathItem> item = cell.getTreeItem();
         	ObjectProperty<TreeItem<PathItem>> prop = new SimpleObjectProperty<>();
         	prop.addListener((ObservableValue<? extends TreeItem<PathItem>> ov, TreeItem<PathItem> oldItem, TreeItem<PathItem> newItem) -> {
@@ -427,7 +427,7 @@ public class MainController implements Initializable {
         		} catch (IOException ex) {
         			messageProp.setValue(String.format("Deleting %s failed", newItem.getValue().getPath().getFileName()));
         		}
-        	});
+        	});*/
             event.consume();
         });
         // on a Target
@@ -442,7 +442,7 @@ public class MainController implements Initializable {
                 if (Files.exists(target, LinkOption.NOFOLLOW_LINKS)) {
                     Platform.runLater(() -> {
                         BooleanProperty replaceProp = new SimpleBooleanProperty();
-                        //CopyModalDialog dialog = new CopyModalDialog(stage, replaceProp);
+                        CopyModalDialog dialog = new CopyModalDialog(replaceProp);
                         replaceProp.addListener((ObservableValue<? extends Boolean> ov, Boolean oldValue, Boolean newValue) -> {
                             if (newValue) {
                                 FileCopyTask task = new FileCopyTask(source, target);
