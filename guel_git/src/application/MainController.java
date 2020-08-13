@@ -21,7 +21,9 @@ import java.util.concurrent.Executors;
 
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
@@ -131,6 +133,7 @@ public class MainController implements Initializable {
             	rootPath = Paths.get(LoadPath);
             	PathItem pathItem = new PathItem(rootPath);
                 treeV.setRoot(createNode(pathItem));
+                treeV.setEditable(true);
                 treeV.setCellFactory((TreeView<PathItem> p) -> {
                 	final PathTreeCell cell = new PathTreeCell(messageProp);
                     setDragDropEvent(cell);
@@ -222,17 +225,19 @@ public class MainController implements Initializable {
 			*/
 		});
 		//트리 아이템 두번  클릭시 -아직 구현 ㄴ
-		treeV.setOnMousePressed(new EventHandler<MouseEvent>()
+		treeV.setOnMouseClicked(new EventHandler<MouseEvent>()
 		{
 		    @Override
 		    public void handle(MouseEvent mouseEvent)
-		    {            
-		        if(mouseEvent.getClickCount() == 2)
+		    {
+		        if(mouseEvent.getClickCount() == 1)
 		        {
 		            TreeItem<PathItem> item = treeV.getSelectionModel().getSelectedItem();
-		            String clickpath = getTreePath(item);
-		            System.out.println("Selected Text : " + clickpath);
-		            openNewTab(clickpath); 
+		            if(item.isLeaf()) {
+		            	String clickpath = getTreePath(item);
+			            System.out.println("Selected Text : " + clickpath);
+			            openNewTab(clickpath);
+		            }
 		        }
 		    }
 		 });
@@ -287,6 +292,7 @@ public class MainController implements Initializable {
 	    }
 	  
 	    tab.setContent(textArea);
+	    //tabpane 새로 추가했을때 원래 눌러져있었으면 자동으로 그 tab으로 가도록 만들어야 됨(미완성)
 	    mainTab.getTabs().add(tab);
 	 }
 
@@ -372,7 +378,7 @@ public class MainController implements Initializable {
         cell.setOnDragDetected(event -> {
             TreeItem<PathItem> item = cell.getTreeItem();
             if (item != null && item.isLeaf()) {
-                Dragboard db = cell.startDragAndDrop(TransferMode.COPY);
+                Dragboard db = cell.startDragAndDrop(TransferMode.MOVE);
                 ClipboardContent content = new ClipboardContent();
                 List<File> files = Arrays.asList(cell.getTreeItem().getValue().getPath().toFile());
                 content.putFiles(files);
@@ -390,7 +396,7 @@ public class MainController implements Initializable {
                 PathTreeCell sourceCell = (PathTreeCell) event.getGestureSource();
                 final Path sourceParentPath = sourceCell.getTreeItem().getValue().getPath().getParent();
                 if (sourceParentPath.compareTo(targetPath) != 0) {
-                    event.acceptTransferModes(TransferMode.COPY);
+                    event.acceptTransferModes(TransferMode.MOVE);
                 }
             }
             event.consume();
@@ -412,7 +418,16 @@ public class MainController implements Initializable {
         });
         // on a Target
         cell.setOnDragExited(event -> {
-            //cell.setStyle("-fx-background-color: white");
+        	TreeItem<PathItem> item = cell.getTreeItem();
+        	ObjectProperty<TreeItem<PathItem>> prop = new SimpleObjectProperty<>();
+        	prop.addListener((ObservableValue<? extends TreeItem<PathItem>> ov, TreeItem<PathItem> oldItem, TreeItem<PathItem> newItem) -> {
+        		try {
+        			Files.walkFileTree(newItem.getValue().getPath(), new VisitorForDelete());
+        			item.getParent().getChildren().remove(newItem);
+        		} catch (IOException ex) {
+        			messageProp.setValue(String.format("Deleting %s failed", newItem.getValue().getPath().getFileName()));
+        		}
+        	});
             event.consume();
         });
         // on a Target

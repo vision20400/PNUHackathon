@@ -10,6 +10,8 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.StringProperty;
@@ -175,12 +177,16 @@ public class PathTreeCell extends TreeCell<PathItem>{
         });
         //현재 디렉토리에 있는 파일 이름 바꾸기(구현중)
         MenuItem rename = new MenuItem("rename");
-        rename.setOnAction(new EventHandler<ActionEvent>() {
+        rename.setOnAction(event -> {
         	//rename the file
-        	public void handle(ActionEvent t) {
-        		startEdit();
-        	}
-        	
+        	Thread thread = new Thread() {
+        		public void run() {
+        			Platform.runLater(() -> {
+        				startEdit();
+        			});
+        		}
+        	};
+        	thread.start();
         });
         MenuItem copy = new MenuItem("copy");
         copy.setOnAction(new EventHandler<ActionEvent>() {
@@ -241,14 +247,17 @@ public class PathTreeCell extends TreeCell<PathItem>{
         } else {
             editingPath =getItem().getPath();
         }
+        System.out.println("5");
     }
 
     @Override
     public void commitEdit(PathItem pathItem) {
         // rename the file or directory
+    	System.out.println("3");
         if (editingPath != null) {
             try {
                 Files.move(editingPath, pathItem.getPath());
+                System.out.println("4");
             } catch (IOException ex) {
                 cancelEdit();
                 messageProp.setValue(String.format("Renaming %s filed", editingPath.getFileName()));
@@ -271,9 +280,11 @@ public class PathTreeCell extends TreeCell<PathItem>{
     private void createTextField() {
         textField = new TextField(getString());
         textField.setOnKeyReleased((KeyEvent t) -> {
+        	System.out.println("1");
             if (t.getCode() == KeyCode.ENTER){
                 Path path = Paths.get(getItem().getPath().getParent().toAbsolutePath().toString(), textField.getText());
                 commitEdit(new PathItem(path));
+                System.out.println("2");
             } else if (t.getCode() == KeyCode.ESCAPE) {
                 cancelEdit();
             }
