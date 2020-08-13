@@ -19,6 +19,8 @@ import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.jfoenix.controls.JFXTabPane;
+
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
@@ -75,7 +77,7 @@ public class MainController implements Initializable {
 	@FXML
 	private MenuItem print;
 	@FXML
-	private TabPane mainTab;
+	private JFXTabPane mainTab;
 	@FXML
 	private TextField txtMsg;
 	@FXML
