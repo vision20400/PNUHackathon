@@ -56,10 +56,6 @@
     -fx-background-color: transparent;
 }
 
-.tab:top:selected {
-    -fx-background-color: #EAF4FA;	
-}
-
 .scroll-bar:horizontal .track,
 .scroll-bar:vertical .track{
     -fx-background-color: transparent;
@@ -75,4 +71,26 @@
 
 .scroll-pane > .corner {
     -fx-background-color: white;
+}
+
+.tab {
+	-fx-background-color: #ACD3EC;
+	-fx-pref-width: 150;
+	-fx-pref-height: 30;
+}
+
+.jfx-tab-pane .headers-region {
+	-fx-background-color: #D5E9F6;
+}
+
+.jfx-tab-pane .tab-header-background {
+	-fx-background-color: #D5E9F6;
+}
+
+.jfx-tab-pane .tab-header-area .jfx-rippler {
+	-jfx-rippler-fill: #EDF2F8;
+}
+
+.jfx-tab-pane .tab-selected-line {
+	-fx-background-color: #FFFFFF;
 }
