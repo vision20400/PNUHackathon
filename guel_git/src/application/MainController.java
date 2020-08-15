@@ -30,7 +30,6 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.print.PrinterJob;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuBar;
@@ -50,8 +49,8 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 import test.CellType;
+import test.FileCell;
 import test.Graph;
 import test.Model;
 import javafx.scene.control.Alert.AlertType;
@@ -113,7 +112,13 @@ public class MainController implements Initializable {
 	 
 		graph = new Graph();
 	    mapping.setCenter(graph.getScrollPane());
-		
+	    
+	    mapping.setOnDragEntered((event)->{
+	    	
+	    	System.out.println("drag");
+	    });
+	    
+	    
 		
 		//디렉토리 로드 버튼 액션
 		loadbtn.setOnAction((event) -> {
@@ -150,8 +155,9 @@ public class MainController implements Initializable {
 		
 		//새파일 추가
 		newFilebtn.setOnAction((event) -> {
-			Tab tab = new Tab();
-		    tab.setText("untitled"); //*.txt
+			
+			TabSetText tst = new TabSetText();
+			Tab tab = tst.createEditableTab("untitled");
 		    TextArea textArea = new TextArea();
 		    textArea.appendText("");
 		    tab.setContent(textArea);
@@ -265,9 +271,9 @@ public class MainController implements Initializable {
 	//선택한 파일 탭에 추가
 	public void openNewTab(String path){
 		File txtFile = new File(path);
-		
-		Tab tab = new Tab();
-	    tab.setText(txtFile.getName()); //*.txt
+		TabSetText tst = new TabSetText();
+		Tab tab = tst.createEditableTab(txtFile.getName());
+	  //  tab.setText(txtFile.getName()); //*.txt
 	    TextArea textArea = new TextArea();
     		 
 	    BufferedReader br = null;
@@ -367,6 +373,8 @@ public class MainController implements Initializable {
         return false;
     }
 	//drag and drop 구현
+	
+	
 	private void setDragDropEvent(final PathTreeCell cell) {
         // The drag starts on a gesture source
         cell.setOnDragDetected(event -> {

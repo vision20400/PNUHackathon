@@ -87,6 +87,8 @@ public class MouseGestures {
             offsetY /= scale;
 
             node.relocate(offsetX, offsetY);
+            
+           // System.out.println("dragged");
         }
     };
 

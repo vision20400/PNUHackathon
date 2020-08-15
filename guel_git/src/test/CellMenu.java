@@ -43,14 +43,18 @@ public class CellMenu {
    		 
             @Override
             public void handle(ActionEvent event) {
+            	
+            	LabelCell curCell = (LabelCell)parent;
+
             	 // create a text input dialog 
-                TextInputDialog td = new TextInputDialog(parent.cellName); 
+                TextInputDialog td = new TextInputDialog(curCell.cellName); 
                 // setHeaderText 
                 td.setHeaderText("rename");              
                 td.showAndWait(); 
             	
             	graph.beginUpdate();
-            	parent.setCellName(td.getEditor().getText());
+            	curCell.setCellName(td.getEditor().getText());
+            	curCell.setLabel(td.getEditor().getText());
             	graph.endUpdate();
             	System.out.println(parent.cellName);
             }
