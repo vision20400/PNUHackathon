@@ -21,6 +21,7 @@ public class LabelCell extends Cell {
         label.setBackground(background);
 
         setView(label);
+        setCellType(CellType.LABEL);
     }
     public Label getLabel() {
     	return label;

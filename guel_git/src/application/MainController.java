@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.regex.Pattern;
 
 import com.jfoenix.controls.JFXTabPane;
 
@@ -34,6 +35,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.print.PrinterJob;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -48,6 +50,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
@@ -55,10 +58,13 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import test.Cell;
 import test.CellType;
+import test.FileCell;
 import test.Graph;
 import test.Model;
 import javafx.scene.control.Alert.AlertType;
+
 
 
 public class MainController implements Initializable {
@@ -94,7 +100,7 @@ public class MainController implements Initializable {
 	private SplitPane split;
 	
 	private String LoadPath;
-	
+	private String filePath;
 	private Path rootPath;
 	
 	@FXML
@@ -119,9 +125,37 @@ public class MainController implements Initializable {
 	    mapping.setCenter(graph.getScrollPane());
 	    
 	    mapping.setOnDragEntered((event)->{
+	    	Model model = graph.getModel();
 	    	
-	    	System.out.println("drag");
+	    	String separator = "\\";
+	    	String[] arr=filePath.replaceAll(Pattern.quote(separator), "\\\\").split("\\\\");
+	        graph.beginUpdate();
+	        FileCell cell = (FileCell) model.addCell(arr[arr.length - 1], CellType.FILE);
+	        cell.setPath(filePath);
+	        cell.setOnMouseClicked(new EventHandler<MouseEvent>()
+			{
+			    @Override
+			    public void handle(MouseEvent mouseEvent)
+			    {
+			        if(mouseEvent.getClickCount() == 2)
+			        {
+				        openNewTab(cell.getPath());
+			        }
+			    }
+			 });
+	        graph.endUpdate();
+	        
+	        System.out.println(cell.getPath());
+	        
 	    });
+	    
+		mapping.setOnDragOver(new EventHandler<DragEvent>() {
+		    public void handle(DragEvent event) {
+		        
+		        event.consume();
+		    }
+		});
+	
 		
 		//디렉토리 로드 버튼 액션
 		loadbtn.setOnAction((event) -> {
@@ -159,8 +193,9 @@ public class MainController implements Initializable {
 		
 		//새파일 추가
 		newFilebtn.setOnAction((event) -> {
-			Tab tab = new Tab();
-		    tab.setText("untitled"); //*.txt
+			TabSetText n_tab = new TabSetText();
+			Tab tab = n_tab.createEditableTab("untitled");
+			
 		    TextArea textArea = new TextArea();
 		    textArea.appendText("");
 		    tab.setContent(textArea);
@@ -187,8 +222,9 @@ public class MainController implements Initializable {
 		});
 		//새파일 추가
 		newFile.setOnAction((event) -> {
-			Tab tab = new Tab();
-		    tab.setText("untitled"); //*.txt
+			TabSetText n_tab = new TabSetText();
+			Tab tab = n_tab.createEditableTab("untitled");
+
 		    TextArea textArea = new TextArea();
 		    textArea.appendText("");
 		    tab.setContent(textArea);
@@ -247,7 +283,6 @@ public class MainController implements Initializable {
 		        }
 		    }
 		 });
-
  	}
 
 	//파일 저장
@@ -277,8 +312,8 @@ public class MainController implements Initializable {
 	public void openNewTab(String path){
 		File txtFile = new File(path);
 		
-		Tab tab = new Tab();
-	    tab.setText(txtFile.getName()); //*.txt
+		TabSetText n_tab = new TabSetText();
+		Tab tab = n_tab.createEditableTab(txtFile.getName());
 	    TextArea textArea = new TextArea();
     		 
 	    BufferedReader br = null;
@@ -384,6 +419,8 @@ public class MainController implements Initializable {
         cell.setOnDragDetected(event -> {
             TreeItem<PathItem> item = cell.getTreeItem();
             if (item != null && item.isLeaf()) {
+            	filePath = getTreePath(item);
+            	
                 Dragboard db = cell.startDragAndDrop(TransferMode.MOVE);
                 ClipboardContent content = new ClipboardContent();
                 List<File> files = Arrays.asList(cell.getTreeItem().getValue().getPath().toFile());
@@ -391,6 +428,9 @@ public class MainController implements Initializable {
                 db.setContent(content);
                 event.consume();
             }
+            
+          
+            
         });
         // on a Target
         cell.setOnDragOver(event -> {

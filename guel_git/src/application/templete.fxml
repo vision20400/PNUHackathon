@@ -1,24 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.*?>
-<?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.control.TabPane?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.ToolBar?>
-<?import javafx.scene.control.TreeView?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.VBox?>
 
 <BorderPane prefHeight="600.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MainController">
    <top>
@@ -28,7 +13,7 @@
               <menus>
                 <Menu mnemonicParsing="false" text="파일">
                   <items>
-                    	<MenuItem fx:id="newFile" mnemonicParsing="false" text="새 문서" />
+                       <MenuItem fx:id="newFile" mnemonicParsing="false" text="새 문서" />
                         <MenuItem fx:id="openFile" mnemonicParsing="false" text="열기" />
                         <MenuItem fx:id="save" mnemonicParsing="false" text="저장" />
                         <MenuItem fx:id="print" mnemonicParsing="false" text="인쇄" />
@@ -145,7 +130,9 @@
                                  </image>
                               </ImageView>
                            </graphic></Button>
-                        <TextField fx:id="txtMsg" />
+                        <TextField fx:id="txtMsg"/>
+                        <Button fx:id="saveMap" mnemonicParsing="false" text="저장"/>
+                        <Button fx:id="loadMap" mnemonicParsing="false" text="불러오기"/>
                     </items>
                   </ToolBar>
                </top>

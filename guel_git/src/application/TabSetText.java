@@ -17,6 +17,7 @@ import javafx.scene.input.MouseEvent;
 public class TabSetText {
 
 	public Tab createEditableTab(String text) {  
+		
 		final Label label = new Label(text);  
 		final Tab tab = new Tab();  
 		tab.setGraphic(label);  

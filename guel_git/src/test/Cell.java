@@ -22,6 +22,7 @@ public class Cell extends Pane {
 
     Graph graph;
     Node view;
+    CellType type;
     
     CellMenu menu ;
     ContextMenu contextMenu;
@@ -77,6 +78,12 @@ public class Cell extends Pane {
 
     public Node getView() {
         return this.view;
+    }
+    public void setCellType(CellType _type) {
+    	this.type = _type; 
+    }
+    public CellType getCellType() {
+    	return this.type;
     }
 
     public String getCellName() {

@@ -273,7 +273,7 @@ public class PathTreeCell extends TreeCell<PathItem>{
         setGraphic(null);
     }
 
-    private String getString() {
+    public String getString() {
         return getItem().toString();
     }
 
