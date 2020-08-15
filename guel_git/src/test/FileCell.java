@@ -9,11 +9,12 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 import test.Cell;
 
-public class LabelCell extends Cell {
+public class FileCell extends Cell {
 
 	Label label;
+	String path;
 	
-    public LabelCell(String name) {
+    public FileCell(String name) {
         super(name);
 
         label = new Label(name);
@@ -29,5 +30,11 @@ public class LabelCell extends Cell {
     public void setLabel(String n_name) {
     	label.setText(n_name);
     }
-
+    
+    public void setPath(String _path) {
+    	this.path = _path;
+    }
+    public String getPath() {
+    	return this.path;
+    }
 }

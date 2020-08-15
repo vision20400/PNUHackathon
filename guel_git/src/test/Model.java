@@ -69,7 +69,7 @@ public class Model {
         return allEdges;
     }
 
-    public void addCell(String id, CellType type) {
+    public Cell addCell(String id, CellType type) {
         Cell newcell;
 
         switch (type) {
@@ -81,6 +81,9 @@ public class Model {
             break;
         case LABEL:
             newcell = new LabelCell(id);
+            break;
+        case FILE:
+            newcell = new FileCell(id);
             break;
         case IMAGE:
             newcell = new ImageCell(id);
@@ -95,6 +98,8 @@ public class Model {
             throw new UnsupportedOperationException("Unsupported type: " + type);
         }
         addCell(newcell);
+        
+        return newcell;
     }
 
 
