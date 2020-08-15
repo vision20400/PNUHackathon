@@ -17,7 +17,7 @@ public class LabelCell extends Cell {
         super(name);
 
         label = new Label(name);
-        Background background = new Background(new BackgroundFill(Color.AQUA, new CornerRadii(5.0), new Insets(-5.0)));
+        Background background = new Background(new BackgroundFill(Color.rgb(200,230,250,1), new CornerRadii(10.0), new Insets(-8.0)));
         label.setBackground(background);
 
         setView(label);

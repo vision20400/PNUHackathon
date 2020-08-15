@@ -19,9 +19,13 @@ import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.jfoenix.controls.JFXTabPane;
+
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
@@ -30,6 +34,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.print.PrinterJob;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuBar;
@@ -49,8 +54,8 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import test.CellType;
-import test.FileCell;
 import test.Graph;
 import test.Model;
 import javafx.scene.control.Alert.AlertType;
@@ -72,7 +77,7 @@ public class MainController implements Initializable {
 	@FXML
 	private MenuItem print;
 	@FXML
-	private TabPane mainTab;
+	private JFXTabPane mainTab;
 	@FXML
 	private TextField txtMsg;
 	@FXML
@@ -117,8 +122,6 @@ public class MainController implements Initializable {
 	    	
 	    	System.out.println("drag");
 	    });
-	    
-	    
 		
 		//디렉토리 로드 버튼 액션
 		loadbtn.setOnAction((event) -> {
@@ -136,6 +139,7 @@ public class MainController implements Initializable {
             	rootPath = Paths.get(LoadPath);
             	PathItem pathItem = new PathItem(rootPath);
                 treeV.setRoot(createNode(pathItem));
+                treeV.setEditable(true);
                 treeV.setCellFactory((TreeView<PathItem> p) -> {
                 	final PathTreeCell cell = new PathTreeCell(messageProp);
                     setDragDropEvent(cell);
@@ -155,9 +159,8 @@ public class MainController implements Initializable {
 		
 		//새파일 추가
 		newFilebtn.setOnAction((event) -> {
-			
-			TabSetText tst = new TabSetText();
-			Tab tab = tst.createEditableTab("untitled");
+			Tab tab = new Tab();
+		    tab.setText("untitled"); //*.txt
 		    TextArea textArea = new TextArea();
 		    textArea.appendText("");
 		    tab.setContent(textArea);
@@ -228,17 +231,19 @@ public class MainController implements Initializable {
 			*/
 		});
 		//트리 아이템 두번  클릭시 -아직 구현 ㄴ
-		treeV.setOnMousePressed(new EventHandler<MouseEvent>()
+		treeV.setOnMouseClicked(new EventHandler<MouseEvent>()
 		{
 		    @Override
 		    public void handle(MouseEvent mouseEvent)
-		    {            
-		        if(mouseEvent.getClickCount() == 2)
+		    {
+		        if(mouseEvent.getClickCount() == 1)
 		        {
 		            TreeItem<PathItem> item = treeV.getSelectionModel().getSelectedItem();
-		            String clickpath = getTreePath(item);
-		            System.out.println("Selected Text : " + clickpath);
-		            openNewTab(clickpath); 
+		            if(item.isLeaf()) {
+		            	String clickpath = getTreePath(item);
+			            System.out.println("Selected Text : " + clickpath);
+			            openNewTab(clickpath);
+		            }
 		        }
 		    }
 		 });
@@ -271,9 +276,9 @@ public class MainController implements Initializable {
 	//선택한 파일 탭에 추가
 	public void openNewTab(String path){
 		File txtFile = new File(path);
-		TabSetText tst = new TabSetText();
-		Tab tab = tst.createEditableTab(txtFile.getName());
-	  //  tab.setText(txtFile.getName()); //*.txt
+		
+		Tab tab = new Tab();
+	    tab.setText(txtFile.getName()); //*.txt
 	    TextArea textArea = new TextArea();
     		 
 	    BufferedReader br = null;
@@ -293,6 +298,7 @@ public class MainController implements Initializable {
 	    }
 	  
 	    tab.setContent(textArea);
+	    //tabpane 새로 추가했을때 원래 눌러져있었으면 자동으로 그 tab으로 가도록 만들어야 됨(미완성)
 	    mainTab.getTabs().add(tab);
 	 }
 
@@ -373,14 +379,12 @@ public class MainController implements Initializable {
         return false;
     }
 	//drag and drop 구현
-	
-	
 	private void setDragDropEvent(final PathTreeCell cell) {
         // The drag starts on a gesture source
         cell.setOnDragDetected(event -> {
             TreeItem<PathItem> item = cell.getTreeItem();
             if (item != null && item.isLeaf()) {
-                Dragboard db = cell.startDragAndDrop(TransferMode.COPY);
+                Dragboard db = cell.startDragAndDrop(TransferMode.MOVE);
                 ClipboardContent content = new ClipboardContent();
                 List<File> files = Arrays.asList(cell.getTreeItem().getValue().getPath().toFile());
                 content.putFiles(files);
@@ -398,7 +402,7 @@ public class MainController implements Initializable {
                 PathTreeCell sourceCell = (PathTreeCell) event.getGestureSource();
                 final Path sourceParentPath = sourceCell.getTreeItem().getValue().getPath().getParent();
                 if (sourceParentPath.compareTo(targetPath) != 0) {
-                    event.acceptTransferModes(TransferMode.COPY);
+                    event.acceptTransferModes(TransferMode.MOVE);
                 }
             }
             event.consume();
@@ -420,7 +424,16 @@ public class MainController implements Initializable {
         });
         // on a Target
         cell.setOnDragExited(event -> {
-            //cell.setStyle("-fx-background-color: white");
+        	TreeItem<PathItem> item = cell.getTreeItem();
+        	ObjectProperty<TreeItem<PathItem>> prop = new SimpleObjectProperty<>();
+        	prop.addListener((ObservableValue<? extends TreeItem<PathItem>> ov, TreeItem<PathItem> oldItem, TreeItem<PathItem> newItem) -> {
+        		try {
+        			Files.walkFileTree(newItem.getValue().getPath(), new VisitorForDelete());
+        			item.getParent().getChildren().remove(newItem);
+        		} catch (IOException ex) {
+        			messageProp.setValue(String.format("Deleting %s failed", newItem.getValue().getPath().getFileName()));
+        		}
+        	});
             event.consume();
         });
         // on a Target
