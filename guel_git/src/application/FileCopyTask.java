@@ -7,8 +7,6 @@ import javafx.concurrent.Task;
 
 /**
  * File copy Task
- * 
- * @author tomo
  */
 public class FileCopyTask extends Task<Void> {
     private Path source;
