@@ -310,6 +310,11 @@ public class MainController implements Initializable {
 			            System.out.println("Selected Text : " + clickpath);
 			            openNewTab(clickpath);
 		            }
+		            else {
+		            	String clickpath = getTreePath(item);
+		            	System.out.println("Selected Text : " + clickpath);
+		            	openallfileTab(clickpath);
+		            }
 		        }
 		        
 		        if(mouseEvent.getClickCount() == 2 && mergeToggle.isSelected())
@@ -506,7 +511,38 @@ public class MainController implements Initializable {
 	    //tabpane 새로 추가했을때 원래 눌러져있었으면 자동으로 그 tab으로 가도록 만들어야 됨(미완성)
 	    mainTab.getTabs().add(tab);
 	 }
-
+	public void openallfileTab(String path) {
+		File dir = new File(path);
+		
+		Tab tab = new Tab();
+		tab.setText(dir.getName());
+		String[] fileNames = dir.list();
+		TextArea textArea = new TextArea();
+		
+		for(String fileName : fileNames) {
+			System.out.println(fileName);
+			File f = new File(dir, fileName);
+			if(f.isDirectory()) {
+				break;
+			}
+			try {
+				BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(f)));
+				String line;
+				textArea.appendText("file : " + f.getName() + "\n");
+			    while((line = br.readLine()) != null){
+			      textArea.appendText(line + "\n");
+			    }
+			    textArea.appendText("--------------------------------------------------------------------------------------------------------------------------------------------------" + "\n");
+				
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+		      e.printStackTrace();
+		    }
+		}
+		tab.setContent(textArea);
+		mainTab.getTabs().add(tab);
+	}
 		
 		
 	//디렉토리로 트리 만들기	
