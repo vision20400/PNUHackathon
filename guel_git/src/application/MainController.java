@@ -50,6 +50,7 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.shape.Line;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -224,7 +225,7 @@ public class MainController implements Initializable {
 			
 			*/
 		});
-		//트리 아이템 두번  클릭시 -아직 구현 ㄴ
+		//트리 아이템 한 번 클릭시(모든 text파일 합치는거 포함)
 		treeV.setOnMouseClicked(new EventHandler<MouseEvent>()
 		{
 		    @Override
@@ -237,6 +238,11 @@ public class MainController implements Initializable {
 		            	String clickpath = getTreePath(item);
 			            System.out.println("Selected Text : " + clickpath);
 			            openNewTab(clickpath);
+		            }
+		            else {
+		            	String clickpath = getTreePath(item);
+		            	System.out.println("Selected Text : " + clickpath);
+		            	openallfileTab(clickpath);
 		            }
 		        }
 		    }
@@ -295,6 +301,40 @@ public class MainController implements Initializable {
 	    //tabpane 새로 추가했을때 원래 눌러져있었으면 자동으로 그 tab으로 가도록 만들어야 됨(미완성)
 	    mainTab.getTabs().add(tab);
 	 }
+	
+	//선택한 폴더 안에 있는 모든 파일들 합치기
+	public void openallfileTab(String path) {
+		File dir = new File(path);
+		
+		Tab tab = new Tab();
+		tab.setText(dir.getName());
+		String[] fileNames = dir.list();
+		TextArea textArea = new TextArea();
+		
+		for(String fileName : fileNames) {
+			System.out.println(fileName);
+			File f = new File(dir, fileName);
+			if(f.isDirectory()) {
+				break;
+			}
+			try {
+				BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(f)));
+				String line;
+				textArea.appendText("file : " + f.getName() + "\n");
+			    while((line = br.readLine()) != null){
+			      textArea.appendText(line + "\n");
+			    }
+			    textArea.appendText("--------------------------------------------------------------------------------------------------------------------------------------------------" + "\n");
+				
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+		      e.printStackTrace();
+		    }
+		}
+		tab.setContent(textArea);
+		mainTab.getTabs().add(tab);
+	}
 
 		
 		

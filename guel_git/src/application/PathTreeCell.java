@@ -199,15 +199,19 @@ public class PathTreeCell extends TreeCell<PathItem>{
         				int num = 1;
         	        	try {
         	        		Path source = getTreeItem().getValue().getPath();
+        	        		File sourcefile = new File(source.toString());
             	        	String copyfile = getTreeItem().getValue().toString();
             	        	System.out.println(copyfile);
-            	        	String copiedfile = copyfile.replaceFirst("(\\.[^\\.]*)?$", "-num");
+            	        	if(sourcefile.exists()) {
+            	        		num++;
+            	        		System.out.println(num);
+            	        	}
+            	        	String copiedfile = copyfile.replaceFirst("(\\.[^\\.]*)?$", "-" + num + ".txt");
             	        	Path target = source.resolveSibling(copiedfile);
 							Files.copy(source, target, StandardCopyOption.COPY_ATTRIBUTES);
 							TreeItem<PathItem> item = PathTreeItem.createNode(new PathItem(target));
 	                        getTreeItem().getParent().getChildren().add(item);
 						} catch (IOException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
         			});
