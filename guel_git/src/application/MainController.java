@@ -1,17 +1,12 @@
 package application;
 
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.awt.Event;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
-import java.io.FileWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
@@ -19,6 +14,9 @@ import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
+
+import javax.json.*;
+import javax.json.stream.JsonParser;
 
 import com.jfoenix.controls.JFXTabPane;
 
@@ -35,39 +33,30 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.print.PrinterJob;
-import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SelectionMode;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
+import javafx.scene.control.*;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-import test.Cell;
-import test.CellType;
-import test.FileCell;
-import test.Graph;
-import test.Model;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
+import test.*;
 import javafx.scene.control.Alert.AlertType;
-
+import test.Cell;
 
 
 public class MainController implements Initializable {
+	@FXML
+	private SplitPane split;
 	@FXML
 	private TreeView<PathItem> treeV;
 	@FXML
@@ -97,7 +86,17 @@ public class MainController implements Initializable {
 	@FXML
 	private Button mappingbtn;
 	@FXML
-	private SplitPane split;
+	private HBox mergeHBox;
+	@FXML
+	private ToggleButton mergeToggle;
+	@FXML
+	private Button saveMap;
+	@FXML
+	private Button loadMap;
+	@FXML
+	private TitledPane associatedWords;
+	@FXML
+	private GridPane associatedGrid;
 	
 	private String LoadPath;
 	private String filePath;
@@ -108,7 +107,15 @@ public class MainController implements Initializable {
 	
 	private Graph graph ;
 	
+	private static boolean fromTreeToMapping = false;
+    final DragContext dragContext = new DragContext();
 
+    class DragContext {
+
+        double x;
+        double y;
+
+    }
 	
 	private StringProperty messageProp= new SimpleStringProperty();
 	private ExecutorService service;
@@ -124,38 +131,58 @@ public class MainController implements Initializable {
 		graph = new Graph();
 	    mapping.setCenter(graph.getScrollPane());
 	    
-	    mapping.setOnDragEntered((event)->{
+	    split.setOnDragEntered(event -> {
+	    	if (treeV.getBoundsInParent().contains(event.getSceneX(), event.getSceneY()))
+	    		fromTreeToMapping = true;
+	    	
+	    	
+	    });
+	    split.setOnDragOver(event -> {
+	    	dragContext.x = event.getX() - mapping.getParent().getBoundsInParent().getMinX();
+	    	dragContext.y = event.getY() - mapping.getParent().getParent().getBoundsInParent().getMinY()/2;
+	    	
+
+	    });
+	    split.setOnDragDone(event -> {
+	    	if (fromTreeToMapping == false)
+	    		return;
+	    	if (mapping.getBoundsInParent().contains(dragContext.x, dragContext.y) == false)
+	    		return;
+	    		
 	    	Model model = graph.getModel();
 	    	
 	    	String separator = "\\";
 	    	String[] arr=filePath.replaceAll(Pattern.quote(separator), "\\\\").split("\\\\");
 	        graph.beginUpdate();
 	        FileCell cell = (FileCell) model.addCell(arr[arr.length - 1], CellType.FILE);
+	        
 	        cell.setPath(filePath);
 	        cell.setOnMouseClicked(new EventHandler<MouseEvent>()
 			{
 			    @Override
 			    public void handle(MouseEvent mouseEvent)
 			    {
-			        if(mouseEvent.getClickCount() == 2)
-			        {
+			        if(mouseEvent.getClickCount() == 2){
 				        openNewTab(cell.getPath());
 			        }
 			    }
 			 });
+	   
+	        
+	        double offsetX = event.getScreenX() + dragContext.x;
+            double offsetY = event.getScreenY() + dragContext.y;
+
+            // adjust the offset in case we are zoomed
+            double scale = graph.getScale();
+
+            offsetX /= scale;
+            offsetY /= scale;
+
+            cell.relocate(offsetX, offsetY);
 	        graph.endUpdate();
 	        
-	        System.out.println(cell.getPath());
-	        
+	        fromTreeToMapping = false;
 	    });
-	    
-		mapping.setOnDragOver(new EventHandler<DragEvent>() {
-		    public void handle(DragEvent event) {
-		        
-		        event.consume();
-		    }
-		});
-	
 		
 		//디렉토리 로드 버튼 액션
 		loadbtn.setOnAction((event) -> {
@@ -275,15 +302,158 @@ public class MainController implements Initializable {
 		        if(mouseEvent.getClickCount() == 1)
 		        {
 		            TreeItem<PathItem> item = treeV.getSelectionModel().getSelectedItem();
+		            if (item == null)
+		            	return;
+		            
 		            if(item.isLeaf()) {
 		            	String clickpath = getTreePath(item);
 			            System.out.println("Selected Text : " + clickpath);
 			            openNewTab(clickpath);
 		            }
 		        }
+		        
+		        if(mouseEvent.getClickCount() == 2 && mergeToggle.isSelected())
+		        {
+		            TreeItem<PathItem> item = treeV.getSelectionModel().getSelectedItem();
+		            if (item == null)
+		            	return;
+		            
+		            if(item.isLeaf()) {
+		            	String clickpath = getTreePath(item);
+			            System.out.println("Selected Text : " + clickpath);
+			            addMergeFile(clickpath);
+		            }
+		        }
 		    }
 		 });
+		
+		txtMsg.setOnKeyPressed(new EventHandler<KeyEvent> () {
+		    @Override
+		      public void handle(KeyEvent event) {
+		    	
+		    	if(event.getCode().equals(KeyCode.ENTER)) {
+		            clickHandler();
+		    	}
+		    }
+		});
+		
+
+
+	      saveMap.setOnAction(new EventHandler<ActionEvent>() {
+	         @Override
+	         public void handle(ActionEvent event) {
+	            FileChooser saveFileChooser = new FileChooser();
+	            File saveFile = saveFileChooser.showSaveDialog(null);
+	            if (saveFile == null)
+	               return;
+	            String filepath = saveFile.getPath();
+
+	            JsonObjectBuilder graphJSONObjectBuilder = Json.createObjectBuilder()
+	                  .add("filename", filepath);
+
+	            JsonArrayBuilder cellJSONArrayBuilder = Json.createArrayBuilder();
+	            for (Cell cell : graph.getModel().getAllCells()) {
+	               JsonObjectBuilder cellInfoBuilder = Json.createObjectBuilder()
+	                     .add("type", CellType.toInteger(cell.getCellType()))
+	                     .add("name", cell.getCellName())
+	                     .add("id", cell.getCellID())
+	                     .add("x", cell.getLayoutX())
+	                     .add("y", cell.getLayoutY());
+	               if (cell.getCellType() == CellType.FILE)
+	                  cellInfoBuilder.add("path", ((FileCell)cell).getPath());
+	               cellJSONArrayBuilder.add(cellInfoBuilder.build());
+	            }
+	            JsonArrayBuilder edgeJSONArrayBuilder = Json.createArrayBuilder();
+	            for (Edge edge : graph.getModel().getAllEdges()) {
+	               JsonObjectBuilder edgeInfoBuilder = Json.createObjectBuilder()
+	                     .add("src", edge.getSource().getCellID())
+	                     .add("dst", edge.getTarget().getCellID());
+	               edgeJSONArrayBuilder.add(edgeInfoBuilder.build());
+	            }
+	            JsonArray cellJSONArray = cellJSONArrayBuilder.build();
+	            JsonArray edgeJSONArray = edgeJSONArrayBuilder.build();
+
+	            graphJSONObjectBuilder.add("cells", cellJSONArray);
+	            graphJSONObjectBuilder.add("edges", edgeJSONArray);
+
+	            JsonObject graphJSONObject = graphJSONObjectBuilder.build();
+
+	            try {
+	               FileWriter fw = new FileWriter(filepath);
+	               JsonWriter jsonWriter = Json.createWriter(fw);
+	               jsonWriter.writeObject(graphJSONObject);
+	               fw.close();
+	               jsonWriter.close();
+	            } catch (IOException e) {
+	               e.printStackTrace();
+	            }
+	         }
+	      });
+	      loadMap.setOnAction(new EventHandler<ActionEvent>() {
+	         @Override
+	         public void handle(ActionEvent event) {
+	            FileChooser newFileChooser = new FileChooser();
+	            File newFile = newFileChooser.showOpenDialog(null);
+	            if (newFile == null)
+	               return;
+	            String filepath = newFile.getPath();
+
+	            Model model = graph.getModel();
+
+	            graph.beginUpdate();
+	            model.getRemovedCells().addAll(model.getAllCells());
+	            model.getRemovedEdges().addAll(model.getAllEdges());
+	            try {
+	               FileReader fr = new FileReader(filepath);
+	               JsonReader jsonReader = Json.createReader(fr);
+	               JsonObject graphJSONObject = jsonReader.readObject();
+	               JsonArray cellJSONArray = graphJSONObject.getJsonArray("cells");
+	               JsonArray edgeJSONArray = graphJSONObject.getJsonArray("edges");
+
+	               for (int i=0; i<cellJSONArray.size(); i++) {
+	                  JsonObject cellJSONObj = cellJSONArray.getJsonObject(i);
+	                  CellType type = CellType.fromInteger(cellJSONObj.getInt("type"));
+	                  String name = cellJSONObj.getString("name");
+	                  int id = cellJSONObj.getInt("id");
+	                  double x = cellJSONObj.getJsonNumber("x").doubleValue();
+	                  double y = cellJSONObj.getJsonNumber("y").doubleValue();
+
+	                  Cell cell = addGraphComponents(name, type);
+	                  model.getCellMap().remove(String.valueOf(cell.getCellID()));
+	                  cell.setCellID(id);
+	                  model.getCellMap().put(String.valueOf(id), cell);
+
+	                  cell.setLayoutX(x);
+	                  cell.setLayoutY(y);
+
+	                  if (cellJSONObj.containsKey("path"))
+	                     ((FileCell)cell).setPath(cellJSONObj.getString("path"));
+	               }
+	               for (int i=0; i<edgeJSONArray.size(); i++) {
+	                  JsonObject edgeJSONObj = edgeJSONArray.getJsonObject(i);
+	                  String srcCellID = String.valueOf(edgeJSONObj.getInt("src"));
+	                  String dstCellID = String.valueOf(edgeJSONObj.getInt("dst"));
+
+	                  model.addEdge(srcCellID, dstCellID);
+	               }
+	               fr.close();
+	            } catch (FileNotFoundException e) {
+	               e.printStackTrace();
+	            } catch (IOException e) {
+	               e.printStackTrace();
+	            }
+
+	            graph.endUpdate();
+	         }
+	      });
+	      associatedWords.setExpanded(false);
  	}
+	
+	private void addMergeFile(String path) {
+		Label text = new Label("text");
+		text.setStyle("	-fx-pref-width: 30; -fx-pref-height: 30;");
+		mergeHBox.getChildren().add(text);
+	}
 
 	//파일 저장
 		 
@@ -374,28 +544,79 @@ public class MainController implements Initializable {
 		
 		return path;
 	}
-
-	
 	
 
 	public void clickHandler() {
+		associatedGrid.getChildren().clear();
+
 		String msg = txtMsg.getText();
-		
-		addGraphComponents();
-		/*Alert alert = new Alert(AlertType.INFORMATION);
-		alert.setTitle("Gondr 알림창");
-		alert.setHeaderText(null);
-		alert.setContentText(msg);
-		alert.show();*/
-		
+		txtMsg.clear();
+		Cell relatedCell = addGraphComponents(msg, CellType.LABEL);
+
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				//associatedGrid.getChildren().clear();
+				try {
+					String URL = "https://opendict.korean.go.kr/search/searchResult?focus_name=query&query=";
+					URL += msg;
+
+					Document doc = Jsoup.connect(URL).get();
+					Elements elem = null;
+					for (int i=1; i<5; i++) {
+						Elements num = doc.select("#searchPaging > div.section.floatL > div.group.mt30 > ul.panel > li > div > div.search_result > dl:nth-child(" + i + ") > dd:nth-child(2) > a > span.word_no.mr5");
+						if (num.text().equals("「001」") == false)
+							continue;	
+						elem = doc.select("#searchPaging > div.section.floatL > div.group.mt30 > ul.panel > li > div > div.search_result > dl:nth-child(" + i + ") > dd:nth-child(2) > a");
+						URL = "https://opendict.korean.go.kr/";
+						URL += elem.attr("href");
+						break;
+					}
+					if (elem == null) {
+						System.out.println("crawling error");
+						return;
+					}
+						
+
+					doc = Jsoup.connect(URL).get();
+					elem = doc.select("div[id=\"wordmap_json_str\"]");
+
+					JsonReader jsonReader = Json.createReader(new StringReader(elem.text()));
+					JsonObject jsonObject = jsonReader.readObject();
+					JsonArray root = jsonObject.getJsonArray("children");
+					
+					int gridIdx = 0;
+					for (int i=0; i<root.size(); i++) {
+						String name = root.getJsonObject(i).getString("name");
+						if (name.length() == "비슷한말".length() && name.equals("비슷한말") == true) {
+							JsonArray children = root.getJsonObject(i).getJsonArray("children");
+							for (int j=0; j<children.size(); j++) {
+								TitledPaneCell cell = new TitledPaneCell(children.getJsonObject(j).getString("name"));
+								cell.setGraph(graph);
+								cell.setRelatedCell(relatedCell);
+								associatedGrid.add(cell, gridIdx++, 0);
+								if (gridIdx > 5) break;
+							}
+							break;
+						}
+					}
+					associatedWords.setExpanded(true);
+				} catch (Exception e) {
+					System.out.println("crawling error");
+				}
+			}
+		});
 	}
 	
-	private void addGraphComponents() {
+	private Cell addGraphComponents(String name, CellType type) {
         Model model = graph.getModel();
 
         graph.beginUpdate();
-        model.addCell(txtMsg.getText(), CellType.LABEL);
+        Cell cell = model.addCell(name, type);
+        cell.relocate(mapping.getWidth()/2, mapping.getHeight()/2);
         graph.endUpdate();
+        
+        return cell;
     }
 
 // 파일 확장자 구분 하는거 근데 filefilter에 이런 기능 있는듯
@@ -428,9 +649,6 @@ public class MainController implements Initializable {
                 db.setContent(content);
                 event.consume();
             }
-            
-          
-            
         });
         // on a Target
         cell.setOnDragOver(event -> {
@@ -513,7 +731,7 @@ public class MainController implements Initializable {
         });
         // on a Source
         cell.setOnDragDone(event -> {
-            ;
+        	;
         });
     }
 	

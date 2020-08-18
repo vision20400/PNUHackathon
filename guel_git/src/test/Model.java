@@ -68,6 +68,9 @@ public class Model {
     public List<Edge> getAllEdges() {
         return allEdges;
     }
+    public Map<String, Cell> getCellMap() {
+    	return cellMap;
+    }
 
     public Cell addCell(String id, CellType type) {
         Cell newcell;
