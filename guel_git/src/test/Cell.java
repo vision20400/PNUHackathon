@@ -98,5 +98,9 @@ public class Cell extends Pane {
     public int getCellID() {
     	return cellID;
     }
+    
+    public void setCellID(int id) {
+    	this.cellID = id;
+    }
 }
 
