@@ -234,7 +234,7 @@ public class MainController implements Initializable {
 		    tab.setContent(htmlEditor);
 		    mainTab.getTabs().add(tab);
 		});
-		
+				
 		//¸ÊÇÎ ¼û±â±â,º¸ÀÌ±â
 		mappingbtn.setOnAction((event) -> {
 			if(split.getDividerPositions()[1] > 0.7)
