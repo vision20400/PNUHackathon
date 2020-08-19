@@ -90,6 +90,8 @@ public class MainController implements Initializable {
 	@FXML
 	private ToggleButton mergeToggle;
 	@FXML
+	private Button mergebutton;
+	@FXML
 	private Button saveMap;
 	@FXML
 	private Button loadMap;
@@ -101,6 +103,7 @@ public class MainController implements Initializable {
 	private String LoadPath;
 	private String filePath;
 	private Path rootPath;
+	private MyStack addallcontents = new MyStack(30);
 	
 	@FXML
 	private BorderPane mapping;
@@ -127,7 +130,7 @@ public class MainController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		
-	 
+		
 		graph = new Graph();
 	    mapping.setCenter(graph.getScrollPane());
 	    
@@ -320,6 +323,12 @@ public class MainController implements Initializable {
 		        if(mouseEvent.getClickCount() == 2 && mergeToggle.isSelected())
 		        {
 		            TreeItem<PathItem> item = treeV.getSelectionModel().getSelectedItem();
+		            if(mergeHBox.hasProperties()) {
+		            	mergebutton.setDisable(true);
+		            }
+		            else {
+		            	mergebutton.setDisable(false);
+		            }
 		            if (item == null)
 		            	return;
 		            
@@ -331,6 +340,34 @@ public class MainController implements Initializable {
 		        }
 		    }
 		 });
+		
+		mergebutton.setOnAction((event) ->{
+			Tab tab = new Tab();
+			TextArea textArea = new TextArea();
+			if(mergeHBox.hasProperties()) {
+				while(addallcontents.isEmpty()) {
+					File txtfile = new File(addallcontents.pop());
+					System.out.println(addallcontents.pop());
+					try {
+						BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(txtfile)));
+						String line;
+						textArea.appendText("file : " + txtfile.getName() + "\n");
+					    while((line = br.readLine()) != null){
+					      textArea.appendText(line + "\n");
+					    }
+					} catch (FileNotFoundException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+					    e.printStackTrace();
+					}
+				}
+				tab.setText("merge result");
+				tab.setContent(textArea);
+				mainTab.getTabs().add(tab);
+			}
+			mergeHBox.getChildren().clear();
+			addallcontents.clear();
+		});
 		
 		txtMsg.setOnKeyPressed(new EventHandler<KeyEvent> () {
 		    @Override
@@ -455,8 +492,10 @@ public class MainController implements Initializable {
  	}
 	
 	private void addMergeFile(String path) {
-		Label text = new Label("text");
-		text.setStyle("	-fx-pref-width: 30; -fx-pref-height: 30;");
+		File txtfile = new File(path);
+		Label text = new Label(txtfile.getName());
+		text.setStyle("	-fx-pref-width: 70; -fx-pref-height: 30;");
+		addallcontents.push(path);
 		mergeHBox.getChildren().add(text);
 	}
 
