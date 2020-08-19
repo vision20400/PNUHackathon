@@ -227,7 +227,7 @@ public class MainController implements Initializable {
 			final HTMLEditor htmlEditor = new HTMLEditor();
 	        htmlEditor.setPrefHeight(245);
 			TabSetText n_tab = new TabSetText();
-			Tab tab = n_tab.createEditableTab("untitled");
+			Tab tab = n_tab.createEditableTab("새 문서");
 			
 		    //TextArea textArea = new TextArea();
 		    //textArea.appendText("");
@@ -258,7 +258,7 @@ public class MainController implements Initializable {
 			final HTMLEditor htmlEditor = new HTMLEditor();
 	        htmlEditor.setPrefHeight(245);
 			TabSetText n_tab = new TabSetText();
-			Tab tab = n_tab.createEditableTab("untitled");
+			Tab tab = n_tab.createEditableTab("새 문서");
 
 		    //TextArea textArea = new TextArea();
 		    //textArea.appendText("");
@@ -493,7 +493,6 @@ public class MainController implements Initializable {
 	            graph.endUpdate();
 	         }
 	      });
-	      associatedWords.setExpanded(false);
  	}
 	
 	private void addMergeFile(String path) {
@@ -683,7 +682,6 @@ public class MainController implements Initializable {
 							break;
 						}
 					}
-					associatedWords.setExpanded(true);
 				} catch (Exception e) {
 					System.out.println("crawling error");
 				}
