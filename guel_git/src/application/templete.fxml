@@ -142,7 +142,7 @@
       </VBox>
    </top>
    <center>
-      <SplitPane fx:id="split" dividerPositions="0.0029411764705882353, 0.9764705882352941">
+      <SplitPane fx:id="split" dividerPositions="0.0029411764705882353, 0.6333333333333333">
         <items>
             <AnchorPane>
                <children>
@@ -156,43 +156,47 @@
             </AnchorPane>
             <BorderPane fx:id="mapping" prefHeight="525.0" prefWidth="353.0">
                <top>
-                  <VBox BorderPane.alignment="CENTER">
-                     <children>
-                        <ToolBar>
-                          <items>
-                            <Button fx:id="labelCell" mnemonicParsing="false" onAction="#clickHandler">
-                                 <graphic>
-                                    <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                       <image>
-                                          <Image url="@../../images/label.png" />
-                                       </image>
-                                    </ImageView>
-                                 </graphic>
-                              </Button>
-                              <TextField fx:id="txtMsg" />
-                              <Button fx:id="saveMap" mnemonicParsing="false" text="저장" />
-                              <Button fx:id="loadMap" mnemonicParsing="false" text="불러오기" />
-                          </items>
-                        </ToolBar>
-                        <TitledPane fx:id="associatedWords" animated="false" text="연관단어">
+                  <JFXTabPane prefHeight="60.0" prefWidth="373.0" BorderPane.alignment="CENTER">
+                     <tabs>
+                        <Tab closable="false" text="편집">
                           <content>
-                              <GridPane fx:id="associatedGrid" hgap="10.0" vgap="10.0" xmlns:fx="http://javafx.com/fxml">
-                                  <columnConstraints>
-                                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                  </columnConstraints>
-                                  <rowConstraints>
-                                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                  </rowConstraints>
-                              </GridPane>
+                            <AnchorPane>
+                                 <children>
+                                    <ToolBar AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                      <items>
+                                          <TextField fx:id="txtMsg" />
+                                        <Button fx:id="labelCell" mnemonicParsing="false" onAction="#clickHandler" text="추가" />
+                                          <Button fx:id="saveMap" mnemonicParsing="false" text="저장" />
+                                          <Button fx:id="loadMap" mnemonicParsing="false" text="불러오기" />
+                                      </items>
+                                    </ToolBar>
+                                 </children>
+                              </AnchorPane>
                           </content>
-                        </TitledPane>
-                     </children>
-                  </VBox>
+                        </Tab>
+                        <Tab closable="false" text="연관 단어">
+                          <content>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                 <children>
+                                    <GridPane fx:id="associatedGrid" hgap="10.0" style="-fx-background-color: #EDF2F8;" vgap="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                        <columnConstraints>
+                                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                        </columnConstraints>
+                                        <rowConstraints>
+                                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                        </rowConstraints>
+                                    </GridPane>
+                                 </children>
+                              </AnchorPane>
+                          </content>
+                        </Tab>
+                     </tabs>
+                  </JFXTabPane>
                </top>
             </BorderPane>
         </items>
