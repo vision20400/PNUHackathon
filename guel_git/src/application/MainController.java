@@ -234,10 +234,10 @@ public class MainController implements Initializable {
 		
 		//¸ÊÇÎ ¼û±â±â,º¸ÀÌ±â
 		mappingbtn.setOnAction((event) -> {
-			if(split.getDividerPositions()[1] >= 0.9)
-				split.setDividerPositions(split.getDividerPositions()[0], 0.8);
+			if(split.getDividerPositions()[1] > 0.7)
+				split.setDividerPositions(split.getDividerPositions()[0], 0.7);
 			else
-				split.setDividerPositions(split.getDividerPositions()[0], 0.9764705882352941);
+				split.setDividerPositions(split.getDividerPositions()[0], 1.0);
 		});
 		
 		//ÆÄÀÏ ¿ÀÇÂ

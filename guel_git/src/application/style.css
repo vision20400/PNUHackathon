@@ -75,8 +75,20 @@
 
 .tab {
 	-fx-background-color: #ACD3EC;
-	-fx-pref-width: 150;
-	-fx-pref-height: 30;
+	-fx-pref-width: 80;
+	-fx-pref-height: 24;
+}
+
+.tab:selected
+{
+    -fx-background-color: #82BDE3;
+}
+
+.tab .tab-label { 
+    -fx-alignment: CENTER;
+    -fx-text-fill: #828282;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
 }
 
 .jfx-tab-pane .headers-region {
@@ -93,4 +105,11 @@
 
 .jfx-tab-pane .tab-selected-line {
 	-fx-background-color: #FFFFFF;
+}
+
+.titled-pane > .title
+{
+    -fx-background-color: #EDF2F8;
+    -fx-border-color: #D5E9F6;
+    -fx-font-weight: bold;
 }
