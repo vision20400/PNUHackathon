@@ -44,6 +44,7 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.web.HTMLEditor;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import org.jsoup.Jsoup;
@@ -220,12 +221,14 @@ public class MainController implements Initializable {
 		
 		//새파일 추가
 		newFilebtn.setOnAction((event) -> {
+			final HTMLEditor htmlEditor = new HTMLEditor();
+	        htmlEditor.setPrefHeight(245);
 			TabSetText n_tab = new TabSetText();
 			Tab tab = n_tab.createEditableTab("untitled");
 			
-		    TextArea textArea = new TextArea();
-		    textArea.appendText("");
-		    tab.setContent(textArea);
+		    //TextArea textArea = new TextArea();
+		    //textArea.appendText("");
+		    tab.setContent(htmlEditor);
 		    mainTab.getTabs().add(tab);
 		});
 		
@@ -249,12 +252,14 @@ public class MainController implements Initializable {
 		});
 		//새파일 추가
 		newFile.setOnAction((event) -> {
+			final HTMLEditor htmlEditor = new HTMLEditor();
+	        htmlEditor.setPrefHeight(245);
 			TabSetText n_tab = new TabSetText();
 			Tab tab = n_tab.createEditableTab("untitled");
 
-		    TextArea textArea = new TextArea();
-		    textArea.appendText("");
-		    tab.setContent(textArea);
+		    //TextArea textArea = new TextArea();
+		    //textArea.appendText("");
+		    tab.setContent(htmlEditor);
 		    mainTab.getTabs().add(tab);
 		});
 		//저장
@@ -463,12 +468,13 @@ public class MainController implements Initializable {
 	//파일 저장
 		 
 	private void saveFile(File saveFile) {
-		
-		TextArea textArea = (TextArea) mainTab.getSelectionModel().getSelectedItem().getContent();
+		final TextArea htmlCode = new TextArea();
+		//TextArea textArea = (TextArea) mainTab.getSelectionModel().getSelectedItem().getContent();
+		htmlCode.setText(((HTMLEditor) mainTab.getSelectionModel().getSelectedItem().getContent()).getHtmlText());
 	    try{
 	      FileWriter writer = null;
 	      writer = new FileWriter(saveFile);
-	      writer.write(textArea.getText().replaceAll("\n", "\r\n"));
+	      writer.write(htmlCode.getText().replaceAll("\n", "\r\n"));
 	      writer.close();
 	      
 	    } catch (IOException e) {
@@ -486,28 +492,30 @@ public class MainController implements Initializable {
 	//선택한 파일 탭에 추가
 	public void openNewTab(String path){
 		File txtFile = new File(path);
-		
+		final HTMLEditor htmlEditor = new HTMLEditor();
+        htmlEditor.setPrefHeight(245);
+        
 		TabSetText n_tab = new TabSetText();
 		Tab tab = n_tab.createEditableTab(txtFile.getName());
-	    TextArea textArea = new TextArea();
-    		 
-	    BufferedReader br = null;
 	    
-	    try{
-	      br = new BufferedReader(new InputStreamReader(new FileInputStream(txtFile)));
-	      String line;
-	      while((line = br.readLine()) != null){
-	        textArea.appendText(line + "\n");
-	      }
-	      
-	    } catch (FileNotFoundException e) {
-	      e.printStackTrace();
-	      
-	    } catch (IOException e) {
-	      e.printStackTrace();
-	    }
-	  
-	    tab.setContent(textArea);
+	    try {
+		       // 바이트 단위로 파일읽기
+		        String filePath = path; // 대상 파일
+		        FileInputStream fileStream = null; // 파일 스트림
+		        
+		        fileStream = new FileInputStream( filePath );// 파일 스트림 생성
+		        //버퍼 선언
+		        byte[ ] readBuffer = new byte[fileStream.available()];
+		        while (fileStream.read( readBuffer ) != -1){}
+		       
+		        htmlEditor.setHtmlText(new String(readBuffer));
+		        fileStream.close(); //스트림 닫기
+		    } catch (Exception e) {
+			e.getStackTrace();
+		    }
+	    
+	    
+	    tab.setContent(htmlEditor);
 	    //tabpane 새로 추가했을때 원래 눌러져있었으면 자동으로 그 tab으로 가도록 만들어야 됨(미완성)
 	    mainTab.getTabs().add(tab);
 	 }
