@@ -87,6 +87,8 @@ public class MainController implements Initializable {
 	@FXML
 	private Button mappingbtn;
 	@FXML
+	private Button template1btn;
+	@FXML
 	private HBox mergeHBox;
 	@FXML
 	private ToggleButton mergeToggle;
@@ -374,6 +376,20 @@ public class MainController implements Initializable {
 			addallcontents.clear();
 		});
 		
+		template1btn.setOnAction((event) -> {
+			final HTMLEditor htmlEditor = new HTMLEditor();
+	        htmlEditor.setPrefHeight(245);
+			TabSetText n_tab = new TabSetText();
+			Tab tab = n_tab.createEditableTab("untitled");
+			Synopsis txt = new Synopsis();
+			String Synopsis = txt.template();
+		    //TextArea textArea = new TextArea();
+		    //textArea.appendText("");
+			htmlEditor.setHtmlText(Synopsis);
+		    tab.setContent(htmlEditor);
+		    mainTab.getTabs().add(tab);
+		});
+		
 		txtMsg.setOnKeyPressed(new EventHandler<KeyEvent> () {
 		    @Override
 		      public void handle(KeyEvent event) {
@@ -528,67 +544,70 @@ public class MainController implements Initializable {
 
 
 	//선택한 파일 탭에 추가
-	public void openNewTab(String path){
-		File txtFile = new File(path);
-		final HTMLEditor htmlEditor = new HTMLEditor();
-        htmlEditor.setPrefHeight(245);
-        
-		TabSetText n_tab = new TabSetText();
-		Tab tab = n_tab.createEditableTab(txtFile.getName());
-	    
-	    try {
-		       // 바이트 단위로 파일읽기
-		        String filePath = path; // 대상 파일
-		        FileInputStream fileStream = null; // 파일 스트림
-		        
-		        fileStream = new FileInputStream( filePath );// 파일 스트림 생성
-		        //버퍼 선언
-		        byte[ ] readBuffer = new byte[fileStream.available()];
-		        while (fileStream.read( readBuffer ) != -1){}
-		       
-		        htmlEditor.setHtmlText(new String(readBuffer));
-		        fileStream.close(); //스트림 닫기
-		    } catch (Exception e) {
-			e.getStackTrace();
-		    }
-	    
-	    
-	    tab.setContent(htmlEditor);
-	    //tabpane 새로 추가했을때 원래 눌러져있었으면 자동으로 그 tab으로 가도록 만들어야 됨(미완성)
-	    mainTab.getTabs().add(tab);
-	 }
-	public void openallfileTab(String path) {
-		File dir = new File(path);
-		
-		Tab tab = new Tab();
-		tab.setText(dir.getName());
-		String[] fileNames = dir.list();
-		TextArea textArea = new TextArea();
-		
-		for(String fileName : fileNames) {
-			System.out.println(fileName);
-			File f = new File(dir, fileName);
-			if(f.isDirectory()) {
-				break;
-			}
-			try {
-				BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(f)));
-				String line;
-				textArea.appendText("file : " + f.getName() + "\n");
-			    while((line = br.readLine()) != null){
-			      textArea.appendText(line + "\n");
+		public void openNewTab(String path){
+			File txtFile = new File(path);
+			final HTMLEditor htmlEditor = new HTMLEditor();
+	        htmlEditor.setPrefHeight(245);
+	        
+			TabSetText n_tab = new TabSetText();
+			Tab tab = n_tab.createEditableTab(txtFile.getName());
+		    
+		    try {
+			       // 바이트 단위로 파일읽기
+			        String filePath = path; // 대상 파일
+			        FileInputStream fileStream = null; // 파일 스트림
+			        
+			        fileStream = new FileInputStream( filePath );// 파일 스트림 생성
+			        //버퍼 선언
+			        byte[ ] readBuffer = new byte[fileStream.available()];
+			        while (fileStream.read( readBuffer ) != -1){}
+			       
+			        htmlEditor.setHtmlText(new String(readBuffer));
+			        fileStream.close(); //스트림 닫기
+			    } catch (Exception e) {
+				e.getStackTrace();
 			    }
-			    textArea.appendText("--------------------------------------------------------------------------------------------------------------------------------------------------" + "\n");
-				
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-		      e.printStackTrace();
-		    }
+		    
+		    
+		    tab.setContent(htmlEditor);
+		    //tabpane 새로 추가했을때 원래 눌러져있었으면 자동으로 그 tab으로 가도록 만들어야 됨(미완성)
+		    mainTab.getTabs().add(tab);
+		 }
+		public void openallfileTab(String path) {
+			File dir = new File(path);
+			final HTMLEditor htmlEditor = new HTMLEditor();
+	        htmlEditor.setPrefHeight(245);
+			
+			TabSetText n_tab = new TabSetText();
+			Tab tab = n_tab.createEditableTab(dir.getName());
+			String[] fileNames = dir.list();
+			
+			for(String fileName : fileNames) {
+				System.out.println(fileName);
+				File f = new File(dir, fileName);
+				if(f.isDirectory()) {
+					break;
+				}
+				try {
+					String filePath = path;
+			        FileInputStream fileStream = null;
+			        fileStream = new FileInputStream( filePath );
+			        htmlEditor.setHtmlText(f.getName());
+					byte[ ] readBuffer = new byte[fileStream.available()];
+					while (fileStream.read( readBuffer ) != -1){}
+				    htmlEditor.setHtmlText(new String(readBuffer));
+					htmlEditor.setHtmlText("--------------------------------------------------------------------------------------------------------------------------------------------------" + "\n");
+			        fileStream.close();
+					
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+			      e.printStackTrace();
+			    }
+			}
+			tab.setContent(htmlEditor);
+			mainTab.getTabs().add(tab);
 		}
-		tab.setContent(textArea);
-		mainTab.getTabs().add(tab);
-	}
 		
 		
 	//디렉토리로 트리 만들기	
