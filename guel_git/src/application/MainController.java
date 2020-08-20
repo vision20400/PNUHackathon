@@ -105,6 +105,7 @@ public class MainController implements Initializable {
 	
 	private String LoadPath;
 	private String filePath;
+	private String textmerge = new String();
 	private Path rootPath;
 	private MyStack addallcontents = new MyStack(30);
 	
@@ -128,7 +129,7 @@ public class MainController implements Initializable {
 	public MainController() {
         treeV = new TreeView<>();
         treeV.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        service = Executors.newFixedThreadPool(3);
+        service = Executors.newFixedThreadPool(5);
     }
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -349,31 +350,42 @@ public class MainController implements Initializable {
 		 });
 		
 		mergebutton.setOnAction((event) ->{
-			Tab tab = new Tab();
-			TextArea textArea = new TextArea();
-			if(mergeHBox.hasProperties()) {
-				while(addallcontents.isEmpty()) {
-					File txtfile = new File(addallcontents.pop());
-					System.out.println(addallcontents.pop());
-					try {
-						BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(txtfile)));
-						String line;
-						textArea.appendText("file : " + txtfile.getName() + "\n");
-					    while((line = br.readLine()) != null){
-					      textArea.appendText(line + "\n");
-					    }
-					} catch (FileNotFoundException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-					    e.printStackTrace();
-					}
+			final HTMLEditor htmlEditor = new HTMLEditor();
+	        htmlEditor.setPrefHeight(245);
+			TabSetText n_tab = new TabSetText();
+			Tab tab = n_tab.createEditableTab("merge result");
+			
+			Thread thread = new Thread() {
+				public void run() {
+					Platform.runLater(() -> {
+						if(!mergeHBox.getChildren().isEmpty()) {
+							System.out.println("1");
+							while(!addallcontents.isEmpty()) {
+								File txtfile = new File(addallcontents.pop());
+								System.out.println("delete\n");
+								try {
+									BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(txtfile)));
+									String line;
+									textmerge += "file : " + txtfile.getName() + "<br/>";
+								    while((line = br.readLine()) != null){
+								      textmerge += line + "<br/>";
+								    }
+								} catch (FileNotFoundException e) {
+									e.printStackTrace();
+								} catch (IOException e) {
+								    e.printStackTrace();
+								}
+							}
+						}
+						htmlEditor.setHtmlText(textmerge);
+						tab.setContent(htmlEditor);
+						mainTab.getTabs().add(tab);
+						mergeHBox.getChildren().clear();
+						addallcontents.clear();
+					});
 				}
-				tab.setText("merge result");
-				tab.setContent(textArea);
-				mainTab.getTabs().add(tab);
-			}
-			mergeHBox.getChildren().clear();
-			addallcontents.clear();
+			};
+			thread.start();
 		});
 		
 		template1btn.setOnAction((event) -> {
@@ -581,30 +593,43 @@ public class MainController implements Initializable {
 			TabSetText n_tab = new TabSetText();
 			Tab tab = n_tab.createEditableTab(dir.getName());
 			String[] fileNames = dir.list();
-			
+			String allfile = new String();
 			for(String fileName : fileNames) {
 				System.out.println(fileName);
 				File f = new File(dir, fileName);
 				if(f.isDirectory()) {
 					break;
 				}
-				try {
-					String filePath = path;
-			        FileInputStream fileStream = null;
-			        fileStream = new FileInputStream( filePath );
-			        htmlEditor.setHtmlText(f.getName());
-					byte[ ] readBuffer = new byte[fileStream.available()];
-					while (fileStream.read( readBuffer ) != -1){}
-				    htmlEditor.setHtmlText(new String(readBuffer));
-					htmlEditor.setHtmlText("--------------------------------------------------------------------------------------------------------------------------------------------------" + "\n");
-			        fileStream.close();
-					
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-			      e.printStackTrace();
-			    }
+				else {
+					try {
+						/*String filePath = path;
+				        FileInputStream fileStream = null;
+				        fileStream = new FileInputStream( filePath );
+				        //htmlEditor.setHtmlText(f.getName());
+						byte[ ] readBuffer = new byte[fileStream.available()];
+						while (fileStream.read( readBuffer ) != -1){}
+					    htmlEditor.setHtmlText(new String(readBuffer));
+						//htmlEditor.setHtmlText("--------------------------------------------------------------------------------------------------------------------------------------------------" + "\n");
+				        fileStream.close();*/
+				        
+				        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(f)));
+						String line;
+						//htmlEditor.setHtmlText("file : " + f.getName() + "\n");
+						allfile += "file : " + f.getName() + "<br/>";
+					    while((line = br.readLine()) != null){
+					    	//htmlEditor.setHtmlText(line + "\n");
+					    	allfile += line + "<br/>";
+					    }
+					    //htmlEditor.setHtmlText("--------------------------------------------------------------------------------------------------------------------------------------------------" + "\n");
+						allfile += "-------------------------------------------------------------" + "<br/>";
+					} catch (FileNotFoundException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+				      e.printStackTrace();
+				    }
+				}
 			}
+			htmlEditor.setHtmlText(allfile);
 			tab.setContent(htmlEditor);
 			mainTab.getTabs().add(tab);
 		}
