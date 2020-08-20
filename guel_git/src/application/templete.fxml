@@ -128,7 +128,14 @@
                            </image>
                         </ImageView>
                      </graphic></Button>
-                  <Button fx:id="template1btn" mnemonicParsing="false" text="Template1" />
+                  <Button fx:id="template1btn" mnemonicParsing="false">
+                     <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../images/Profile.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></Button>
                   <Button mnemonicParsing="false" text="Template2" />
                   <ToggleButton fx:id="mergeToggle" mnemonicParsing="false">
                      <graphic>
