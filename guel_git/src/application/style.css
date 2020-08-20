@@ -113,3 +113,21 @@
     -fx-border-color: #D5E9F6;
     -fx-font-weight: bold;
 }
+
+.toggle-button1 {
+  -fx-background-repeat: no-repeat;
+  -fx-background-position: center;
+  -fx-background-color : #EDF2F8;
+}
+
+.toggle-button1 > ImageView {
+	-fx-image: url("../../images/pin_off.png");
+}
+
+.toggle-button1:selected {
+  -fx-background-color : #ACD3EC;
+}
+
+.toggle-button1:selected > ImageView {
+	-fx-image: url("../../images/pin_on.png");
+}

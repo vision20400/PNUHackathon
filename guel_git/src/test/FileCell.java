@@ -18,7 +18,7 @@ public class FileCell extends Cell {
         super(name);
 
         label = new Label(name);
-        Background background = new Background(new BackgroundFill(Color.rgb(100,180,220,1), new CornerRadii(10.0), new Insets(-8.0)));
+        Background background = new Background(new BackgroundFill(Color.rgb(150,200,230,1), new CornerRadii(10.0), new Insets(-8.0)));
         label.setBackground(background);
 
         setView(label);

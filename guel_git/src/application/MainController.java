@@ -191,7 +191,7 @@ public class MainController implements Initializable {
 	        fromTreeToMapping = false;
 	    });
 		
-		//µğ·ºÅä¸® ·Îµå ¹öÆ° ¾×¼Ç
+		//ë””ë ‰í† ë¦¬ ë¡œë“œ ë²„íŠ¼ ì•¡ì…˜
 		loadbtn.setOnAction((event) -> {
 			DirectoryChooser directorychooser = new DirectoryChooser();
 			directorychooser.setInitialDirectory(new File(System.getProperty("user.home")));
@@ -217,7 +217,7 @@ public class MainController implements Initializable {
         
 	   });
 		
-		//ÆÄÀÏÆ®¸® ¼û±â±â,º¸ÀÌ±â
+		//íŒŒì¼íŠ¸ë¦¬ ìˆ¨ê¸°ê¸°,ë³´ì´ê¸°
 		binderbtn.setOnAction((event) -> {
 			if(split.getDividerPositions()[0] <= 0.1)
 				split.setDividerPositions(0.2);
@@ -225,12 +225,12 @@ public class MainController implements Initializable {
 				split.setDividerPositions(0.0);
 		});
 		
-		//»õÆÄÀÏ Ãß°¡
+		//ìƒˆíŒŒì¼ ì¶”ê°€
 		newFilebtn.setOnAction((event) -> {
 			final HTMLEditor htmlEditor = new HTMLEditor();
 	        htmlEditor.setPrefHeight(245);
 			TabSetText n_tab = new TabSetText();
-			Tab tab = n_tab.createEditableTab("»õ ¹®¼­");
+			Tab tab = n_tab.createEditableTab("ìƒˆ ë¬¸ì„œ");
 			
 		    //TextArea textArea = new TextArea();
 		    //textArea.appendText("");
@@ -238,7 +238,7 @@ public class MainController implements Initializable {
 		    mainTab.getTabs().add(tab);
 		});
 				
-		//¸ÊÇÎ ¼û±â±â,º¸ÀÌ±â
+		//ë§µí•‘ ìˆ¨ê¸°ê¸°,ë³´ì´ê¸°
 		mappingbtn.setOnAction((event) -> {
 			if(split.getDividerPositions()[1] > 0.7)
 				split.setDividerPositions(split.getDividerPositions()[0], 0.7);
@@ -246,7 +246,7 @@ public class MainController implements Initializable {
 				split.setDividerPositions(split.getDividerPositions()[0], 1.0);
 		});
 		
-		//ÆÄÀÏ ¿ÀÇÂ
+		//íŒŒì¼ ì˜¤í”ˆ
 		openFile.setOnAction(new EventHandler<ActionEvent>() {
 		    public void handle(ActionEvent event) {
 		        FileChooser newFileChooser = new FileChooser();
@@ -256,19 +256,19 @@ public class MainController implements Initializable {
 		        }
 		    }
 		});
-		//»õÆÄÀÏ Ãß°¡
+		//ìƒˆíŒŒì¼ ì¶”ê°€
 		newFile.setOnAction((event) -> {
 			final HTMLEditor htmlEditor = new HTMLEditor();
 	        htmlEditor.setPrefHeight(245);
 			TabSetText n_tab = new TabSetText();
-			Tab tab = n_tab.createEditableTab("»õ ¹®¼­");
+			Tab tab = n_tab.createEditableTab("ìƒˆ ë¬¸ì„œ");
 
 		    //TextArea textArea = new TextArea();
 		    //textArea.appendText("");
 		    tab.setContent(htmlEditor);
 		    mainTab.getTabs().add(tab);
 		});
-		//ÀúÀå
+		//ì €ì¥
 		save.setOnAction((event) -> {
 			if (isTabExist()) {
 	            FileChooser saveFileChooser = new FileChooser();
@@ -278,7 +278,7 @@ public class MainController implements Initializable {
 	            }
 	        }
 		});
-		//ÇÁ¸°Æ®
+		//í”„ë¦°íŠ¸
 		print.setOnAction((event) -> {
 			if (isTabExist()) {
 		        PrinterJob printerJob = PrinterJob.createPrinterJob();
@@ -290,7 +290,7 @@ public class MainController implements Initializable {
 		        }
 		    }
         });
-		//½Å°æ¤¤¤¤
+		//ì‹ ê²½ã„´ã„´
 		newWindow.setOnAction((event) -> {
 	        System.out.println("newWindow clicked");
 	        /*
@@ -304,7 +304,7 @@ public class MainController implements Initializable {
 			
 			*/
 		});
-		//Æ®¸® ¾ÆÀÌÅÛ µÎ¹ø  Å¬¸¯½Ã -¾ÆÁ÷ ±¸Çö ¤¤
+		//íŠ¸ë¦¬ ì•„ì´í…œ ë‘ë²ˆ  í´ë¦­ì‹œ -ì•„ì§ êµ¬í˜„ ã„´
 		treeV.setOnMouseClicked(new EventHandler<MouseEvent>()
 		{
 		    @Override
@@ -531,7 +531,7 @@ public class MainController implements Initializable {
 		mergeHBox.getChildren().add(text);
 	}
 
-	//ÆÄÀÏ ÀúÀå
+	//íŒŒì¼ ì €ì¥
 		 
 	private void saveFile(File saveFile) {
 		final TextArea htmlCode = new TextArea();
@@ -549,13 +549,13 @@ public class MainController implements Initializable {
 	
 	}
 
-	//ÅÇ Á¸Á¦¿©ºÎ
+	//íƒ­ ì¡´ì œì—¬ë¶€
 	private boolean isTabExist() {
 		return mainTab.getSelectionModel().getSelectedItem() != null;
 	}
 
 
-	//¼±ÅÃÇÑ ÆÄÀÏ ÅÇ¿¡ Ãß°¡
+	//ì„ íƒí•œ íŒŒì¼ íƒ­ì— ì¶”ê°€
 		public void openNewTab(String path){
 			File txtFile = new File(path);
 			final HTMLEditor htmlEditor = new HTMLEditor();
@@ -565,24 +565,24 @@ public class MainController implements Initializable {
 			Tab tab = n_tab.createEditableTab(txtFile.getName());
 		    
 		    try {
-			       // ¹ÙÀÌÆ® ´ÜÀ§·Î ÆÄÀÏÀĞ±â
-			        String filePath = path; // ´ë»ó ÆÄÀÏ
-			        FileInputStream fileStream = null; // ÆÄÀÏ ½ºÆ®¸²
+			       // ë°”ì´íŠ¸ ë‹¨ìœ„ë¡œ íŒŒì¼ì½ê¸°
+			        String filePath = path; // ëŒ€ìƒ íŒŒì¼
+			        FileInputStream fileStream = null; // íŒŒì¼ ìŠ¤íŠ¸ë¦¼
 			        
-			        fileStream = new FileInputStream( filePath );// ÆÄÀÏ ½ºÆ®¸² »ı¼º
-			        //¹öÆÛ ¼±¾ğ
+			        fileStream = new FileInputStream( filePath );// íŒŒì¼ ìŠ¤íŠ¸ë¦¼ ìƒì„±
+			        //ë²„í¼ ì„ ì–¸
 			        byte[ ] readBuffer = new byte[fileStream.available()];
 			        while (fileStream.read( readBuffer ) != -1){}
 			       
 			        htmlEditor.setHtmlText(new String(readBuffer));
-			        fileStream.close(); //½ºÆ®¸² ´İ±â
+			        fileStream.close(); //ìŠ¤íŠ¸ë¦¼ ë‹«ê¸°
 			    } catch (Exception e) {
 				e.getStackTrace();
 			    }
 		    
 		    
 		    tab.setContent(htmlEditor);
-		    //tabpane »õ·Î Ãß°¡ÇßÀ»¶§ ¿ø·¡ ´­·¯Á®ÀÖ¾úÀ¸¸é ÀÚµ¿À¸·Î ±× tabÀ¸·Î °¡µµ·Ï ¸¸µé¾î¾ß µÊ(¹Ì¿Ï¼º)
+		    //tabpane ìƒˆë¡œ ì¶”ê°€í–ˆì„ë•Œ ì›ë˜ ëˆŒëŸ¬ì ¸ìˆì—ˆìœ¼ë©´ ìë™ìœ¼ë¡œ ê·¸ tabìœ¼ë¡œ ê°€ë„ë¡ ë§Œë“¤ì–´ì•¼ ë¨(ë¯¸ì™„ì„±)
 		    mainTab.getTabs().add(tab);
 		 }
 		public void openallfileTab(String path) {
@@ -635,7 +635,7 @@ public class MainController implements Initializable {
 		}
 		
 		
-	//µğ·ºÅä¸®·Î Æ®¸® ¸¸µé±â	
+	//ë””ë ‰í† ë¦¬ë¡œ íŠ¸ë¦¬ ë§Œë“¤ê¸°	
 	public TreeItem<String> getNodesForDirectory(File directory) {
 		   //Returns a TreeItem representation of the specified directory
            TreeItem<String> root = new TreeItem<String>(directory.getName());
@@ -653,7 +653,7 @@ public class MainController implements Initializable {
            return root;
 	 }
 	
-	// ¼±ÅÃÇÑ Æ®¸®¾ÆÀÌÅÛ °æ·Î ±¸ÇÏ±â
+	// ì„ íƒí•œ íŠ¸ë¦¬ì•„ì´í…œ ê²½ë¡œ êµ¬í•˜ê¸°
 	public String getTreePath(TreeItem<PathItem> item) {
 		TreeItem<PathItem> cur_item = item;
 		String path = "";
@@ -691,7 +691,7 @@ public class MainController implements Initializable {
 					Elements elem = null;
 					for (int i=1; i<5; i++) {
 						Elements num = doc.select("#searchPaging > div.section.floatL > div.group.mt30 > ul.panel > li > div > div.search_result > dl:nth-child(" + i + ") > dd:nth-child(2) > a > span.word_no.mr5");
-						if (num.text().equals("¡¸001¡¹") == false)
+						if (num.text().equals("ã€Œ001ã€") == false)
 							continue;	
 						elem = doc.select("#searchPaging > div.section.floatL > div.group.mt30 > ul.panel > li > div > div.search_result > dl:nth-child(" + i + ") > dd:nth-child(2) > a");
 						URL = "https://opendict.korean.go.kr/";
@@ -714,7 +714,7 @@ public class MainController implements Initializable {
 					int gridIdx = 0;
 					for (int i=0; i<root.size(); i++) {
 						String name = root.getJsonObject(i).getString("name");
-						if (name.length() == "ºñ½ÁÇÑ¸»".length() && name.equals("ºñ½ÁÇÑ¸»") == true) {
+						if (name.length() == "ë¹„ìŠ·í•œë§".length() && name.equals("ë¹„ìŠ·í•œë§") == true) {
 							JsonArray children = root.getJsonObject(i).getJsonArray("children");
 							for (int j=0; j<children.size(); j++) {
 								TitledPaneCell cell = new TitledPaneCell(children.getJsonObject(j).getString("name"));
@@ -744,12 +744,12 @@ public class MainController implements Initializable {
         return cell;
     }
 
-// ÆÄÀÏ È®ÀåÀÚ ±¸ºĞ ÇÏ´Â°Å ±Ùµ¥ filefilter¿¡ ÀÌ·± ±â´É ÀÖ´Âµí
+// íŒŒì¼ í™•ì¥ì êµ¬ë¶„ í•˜ëŠ”ê±° ê·¼ë° filefilterì— ì´ëŸ° ê¸°ëŠ¥ ìˆëŠ”ë“¯
 	public static boolean FileExtension(String name) {
         String fileName = name;
         String ext = fileName.substring(fileName.lastIndexOf(".") + 1,
                 fileName.length());
-        final String[] extension = { "txt","jpg"};// È®ÀåÀÚ ±¸º° 
+        final String[] extension = { "txt","jpg"};// í™•ì¥ì êµ¬ë³„ 
  
         int len = extension.length;
         for (int i = 0; i < len; i++) {
@@ -759,7 +759,7 @@ public class MainController implements Initializable {
         }
         return false;
     }
-	//drag and drop ±¸Çö
+	//drag and drop êµ¬í˜„
 	private void setDragDropEvent(final PathTreeCell cell) {
         // The drag starts on a gesture source
         cell.setOnDragDetected(event -> {
