@@ -34,17 +34,21 @@ public class MyStack {
     public String pop() {
         if(isEmpty()) {
             System.out.println("Deleting fail! Stack is empty!");
-            throw new EmptyStackException();
+            //throw new EmptyStackException();
+            return null;
         } else { 
             System.out.println("Deleted Item : " + array[top]);
-            return array[--top];
-        }                
+            int num = top;
+            top--;
+            return array[num];
+        }
     }
     
     public String peek() {
         if(isEmpty()) {
             System.out.println("Peeking fail! Stack is empty!");
-            throw new EmptyStackException();
+            //throw new EmptyStackException();
+            return null;
         } else { 
             System.out.println("Peeked Item : " + array[top]);
             return array[top];
