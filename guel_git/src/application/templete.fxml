@@ -143,7 +143,7 @@
       </VBox>
    </top>
    <center>
-      <SplitPane fx:id="split" dividerPositions="0.0029411764705882353, 0.6333333333333333">
+      <SplitPane fx:id="split" dividerPositions="0.007827788649706457, 0.9941291585127201">
         <items>
             <AnchorPane>
                <children>
