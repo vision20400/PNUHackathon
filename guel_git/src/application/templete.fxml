@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
+<?import javafx.scene.shape.*?>
 <?import javafx.geometry.*?>
 <?import java.lang.*?>
 <?import javafx.scene.control.*?>
@@ -63,6 +65,15 @@
                            </image>
                         </ImageView>
                      </graphic></Button>
+                  <Button fx:id="mappingbtn" mnemonicParsing="false">
+                     <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../images/mapping.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></Button>
+                  <Line endY="20.0" startY="-20.0" style="-fx-stroke: #ACD3EC;" />
                   <Button fx:id="loadbtn" mnemonicParsing="false">
                      <graphic>
                         <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
@@ -83,18 +94,11 @@
                      <graphic>
                         <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../../images/Profile.png" />
+                              <Image url="@../../images/print.png" />
                            </image>
                         </ImageView>
                      </graphic></Button>
-                  <Button fx:id="template1btn" mnemonicParsing="false">
-                     <graphic>
-                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../../images/summary.png" />
-                           </image>
-                        </ImageView>
-                     </graphic></Button>
+                  <Line endY="20.0" startY="-20.0" style="-fx-stroke: #ACD3EC;" />
                   <Button fx:id="newFilebtn" mnemonicParsing="false">
                      <graphic>
                         <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
@@ -112,34 +116,24 @@
                         </ImageView>
                      </graphic>
                   </Button>
+                  <Line endY="20.0" startY="-20.0" style="-fx-stroke: #ACD3EC;" />
                   <Button mnemonicParsing="false">
                      <graphic>
                         <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../../images/print.png" />
+                              <Image url="@../../images/Profile.png" />
                            </image>
                         </ImageView>
                      </graphic></Button>
-                  <Button fx:id="mappingbtn" mnemonicParsing="false">
+                  <Button fx:id="template1btn" mnemonicParsing="false">
                      <graphic>
                         <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../../images/mapping.png" />
+                              <Image url="@../../images/summary.png" />
                            </image>
                         </ImageView>
                      </graphic></Button>
-                  <Button mnemonicParsing="false">
-                     <graphic>
-                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../../images/timeline.png" />
-                           </image>
-                        </ImageView>
-                     </graphic></Button>
-                  <ToggleButton fx:id="mergeToggle" mnemonicParsing="false" prefHeight="38.0" prefWidth="46.0" styleClass="toggle-button1">
-                     <graphic>
-                        <ImageView fitHeight="30.0" pickOnBounds="true" preserveRatio="true" />
-                     </graphic></ToggleButton>
+                  <Line endY="20.0" startY="-20.0" style="-fx-stroke: #ACD3EC;" />
                   <Button fx:id="mergebutton" mnemonicParsing="false">
                      <graphic>
                         <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
@@ -148,6 +142,10 @@
                            </image>
                         </ImageView>
                      </graphic></Button>
+                  <ToggleButton fx:id="mergeToggle" maxHeight="38.0" maxWidth="46.0" minHeight="38.0" minWidth="46.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="46.0" styleClass="toggle-button1">
+                     <graphic>
+                        <ImageView fitHeight="30.0" pickOnBounds="true" preserveRatio="true" />
+                     </graphic></ToggleButton>
                   <HBox fx:id="mergeHBox" />
                </items>
             </ToolBar>
@@ -155,7 +153,7 @@
       </VBox>
    </top>
    <center>
-      <SplitPane fx:id="split" dividerPositions="0.00784313725490196, 0.6421568627450981">
+      <SplitPane fx:id="split" dividerPositions="0.0029411764705882353, 0.6421568627450981">
         <items>
             <AnchorPane>
                <children>
