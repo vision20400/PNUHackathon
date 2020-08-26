@@ -350,7 +350,7 @@ public class MainController implements Initializable {
 		    @Override
 		    public void handle(MouseEvent mouseEvent)
 		    {
-		        if(mouseEvent.getClickCount() == 2)
+		        if(mouseEvent.getClickCount() == 1 && !(mergeToggle.isSelected()))
 		        {
 		            TreeItem<PathItem> item = treeV.getSelectionModel().getSelectedItem();
 		            if (item == null)
