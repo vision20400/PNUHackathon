@@ -315,7 +315,7 @@ public class MainController implements Initializable {
 		    @Override
 		    public void handle(MouseEvent mouseEvent)
 		    {
-		        if(mouseEvent.getClickCount() == 1)
+		        if(mouseEvent.getClickCount() == 2)
 		        {
 		            TreeItem<PathItem> item = treeV.getSelectionModel().getSelectedItem();
 		            if (item == null)
