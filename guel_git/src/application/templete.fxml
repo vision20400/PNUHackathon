@@ -82,7 +82,7 @@
                            </image>
                         </ImageView>
                      </graphic></Button>
-                  <Button mnemonicParsing="false">
+                  <Button fx:id="savebtn" mnemonicParsing="false">
                      <graphic>
                         <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -90,7 +90,7 @@
                            </image>
                         </ImageView>
                      </graphic></Button>
-                  <Button mnemonicParsing="false">
+                  <Button fx:id="printbtn" mnemonicParsing="false">
                      <graphic>
                         <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                            <image>

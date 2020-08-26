@@ -94,6 +94,10 @@ public class MainController implements Initializable {
 	@FXML
 	private Button template1btn;
 	@FXML
+	private Button savebtn;
+	@FXML
+	private Button printbtn;
+	@FXML
 	private HBox mergeHBox;
 	@FXML
 	private ToggleButton mergeToggle;
@@ -283,8 +287,30 @@ public class MainController implements Initializable {
 	            }
 	        }
 		});
+		
+		savebtn.setOnAction((event) -> {
+			if (isTabExist()) {
+	            FileChooser saveFileChooser = new FileChooser();
+	            File saveFile = saveFileChooser.showSaveDialog(null);
+	            if (saveFile != null) {
+	              saveFile(saveFile);
+	            }
+	        }
+		});
 		//프린트
 		print.setOnAction((event) -> {
+			if (isTabExist()) {
+		        PrinterJob printerJob = PrinterJob.createPrinterJob();
+		        if (printerJob.showPrintDialog(null)){
+		            boolean success = printerJob.printPage(mainTab.getSelectionModel().getSelectedItem().getContent());
+		            if (success) {
+		                printerJob.endJob();
+		            }
+		        }
+		    }
+        });
+		
+		printbtn.setOnAction((event) -> {
 			if (isTabExist()) {
 		        PrinterJob printerJob = PrinterJob.createPrinterJob();
 		        if (printerJob.showPrintDialog(null)){
