@@ -368,7 +368,7 @@ public class MainController implements Initializable {
 		            }
 		        }
 		        
-		        if(mouseEvent.getClickCount() == 2 && mergeToggle.isSelected())
+		        if(mouseEvent.getClickCount() == 1 && mergeToggle.isSelected())
 		        {
 		            TreeItem<PathItem> item = treeV.getSelectionModel().getSelectedItem();
 		            if(mergeHBox.hasProperties()) {
