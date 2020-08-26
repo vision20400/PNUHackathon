@@ -57,6 +57,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import test.*;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.TabPane.TabClosingPolicy;
 import test.Cell;
 
 
@@ -89,6 +90,8 @@ public class MainController implements Initializable {
 	private Button binderbtn;
 	@FXML
 	private Button newFilebtn;
+	@FXML
+	private Button deletebtn;
 	@FXML
 	private Button mappingbtn;
 	@FXML
@@ -246,6 +249,11 @@ public class MainController implements Initializable {
 		    tab.setContent(htmlEditor);
 		    mainTab.getTabs().add(tab);
 		});
+		
+		//탭 닫기
+		deletebtn.setOnAction((event) -> {
+		    mainTab.getTabs().remove(mainTab.getSelectionModel().getSelectedItem());
+        });
 				
 		//맵핑 숨기기,보이기
 		mappingbtn.setOnAction((event) -> {
@@ -321,6 +329,7 @@ public class MainController implements Initializable {
 		        }
 		    }
         });
+		
 		//신경ㄴㄴ
 		newWindow.setOnAction((event) -> {
 	        System.out.println("newWindow clicked");
