@@ -240,7 +240,7 @@ public class MainController implements Initializable {
 		//새파일 추가
 		newFilebtn.setOnAction((event) -> {
 			final HTMLEditor htmlEditor = new HTMLEditor();
-	        htmlEditor.setPrefHeight(245);
+			htmlEditor.setPadding(new Insets(0, 0, 0, 0));
 			TabSetText n_tab = new TabSetText();
 			Tab tab = n_tab.createEditableTab("새 문서");
 			
