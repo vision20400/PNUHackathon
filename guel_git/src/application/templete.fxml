@@ -213,26 +213,8 @@
                   </JFXTabPane>
                </top>
                <center>
-                  <JFXTabPane fx:id="graphtab" BorderPane.alignment="CENTER">
-                     <tabs>
-                        <Tab text="맵핑">
-                          <content>
-                            <AnchorPane>
-                                 <children>
-                                    <BorderPane fx:id="mappingtab" prefHeight="435.0" prefWidth="364.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                                 </children></AnchorPane>
-                          </content>
-                        </Tab>
-                        <Tab text="타임라인">
-                          <content>
-                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0">
-                                 <children>
-                                    <BorderPane fx:id="timelinetab" prefHeight="435.0" prefWidth="364.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                                 </children></AnchorPane>
-                          </content>
-                        </Tab>
-                     </tabs>
-                  </JFXTabPane>
+                 <BorderPane fx:id="mappingtab" prefHeight="435.0" prefWidth="364.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                  
                </center>
             </BorderPane>
         </items>

@@ -33,6 +33,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.print.PrinterJob;
 import javafx.scene.control.*;
 import javafx.scene.input.ClipboardContent;
@@ -47,6 +48,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
@@ -112,8 +114,6 @@ public class MainController implements Initializable {
 	private GridPane associatedGrid;
 	@FXML
 	private BorderPane mappingtab;
-	@FXML
-	private BorderPane timelinetab;
 	
 	
 	private String LoadPath;
@@ -124,9 +124,10 @@ public class MainController implements Initializable {
 	
 	@FXML
 	private BorderPane mapping;
+	private Graph graph;
 	
-	private Graph graph1 ;
-	private Graph graph2 ;
+	private VBox timeline = new VBox();
+
 	
     JsonReader relatedJSONReader;
     JsonObject relatedJSONObject;
@@ -153,14 +154,20 @@ public class MainController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 		
 		
-		graph1 = new Graph();
-		graph2 = new Graph();
+		graph = new Graph();
 		
-		
-		
-		mappingtab.setCenter(graph1.getScrollPane());
-	    timelinetab.setCenter(graph2.getScrollPane());
-		
+		mappingtab.setCenter(graph.getScrollPane());
+		timeline.setSpacing(17);
+		Label f0 = new Label("타임라인");
+		FileCell f1 = new FileCell("d");
+	    FileCell f2 = new FileCell("dddd");
+	    FileCell f3 = new FileCell("d");
+	    FileCell f4 = new FileCell("dddd");
+	    FileCell f5 = new FileCell("d");
+	    FileCell f6 = new FileCell("dddd");
+	    
+	    timeline.getChildren().addAll(f0,f1,f2,f3,f4,f5,f6);
+	    mappingtab.setLeft(timeline);
 
 	    
 	    
@@ -182,91 +189,43 @@ public class MainController implements Initializable {
 	    		return;
 	    	if (mapping.getBoundsInParent().contains(dragContext.x, dragContext.y) == false)
 	    		return;
-	    	if((graphtab.getSelectionModel().getSelectedItem().getText()).equals("타임라인") ) {
-	    		Model model = graph2.getModel();
-		    	
-		    	String separator = "\\";
-		    	String[] arr=filePath.replaceAll(Pattern.quote(separator), "\\\\").split("\\\\");
-		        graph2.beginUpdate();
-		        FileCell cell = (FileCell) model.addCell(arr[arr.length - 1], CellType.FILE);
-		        
-		        cell.setPath(filePath);
-		        cell.setOnMouseClicked(new EventHandler<MouseEvent>()
-				{
-				    @Override
-				    public void handle(MouseEvent mouseEvent)
-				    {
-				        if(mouseEvent.getClickCount() == 2){
-					        openNewTab(cell.getPath());
-				        }
-				    }
-				 });
-
-	            double offsetX = graph2.getScrollPane().getWidth()/2;
-	            double offsetY = graph2.getScrollPane().getHeight()/2;
-
-	            System.out.println(offsetY);
-	            // adjust the offset in case we are zoomed
-	            double scale2 = graph2.getScale();
-
-	            offsetX /= scale2;
-	            offsetY /= scale2 ;
-
-	            cell.relocate(offsetX, offsetY);
-	            
-	            TextInputDialog td = new TextInputDialog(); 
-                // setHeaderText 
-                td.setHeaderText("사건입력");              
-                td.showAndWait(); 
-            	
-            	
-            	cell.setCellName(td.getEditor().getText());
-            	cell.setLabel(td.getEditor().getText());
-            	
-		        graph2.endUpdate();
-		        
-		        fromTreeToMapping = false;
-
-	    		return;
-	    	}
-	    	else {
-	    		Model model = graph1.getModel();
-		    	
-		    	String separator = "\\";
-		    	String[] arr=filePath.replaceAll(Pattern.quote(separator), "\\\\").split("\\\\");
-		        graph1.beginUpdate();
-		        FileCell cell = (FileCell) model.addCell(arr[arr.length - 1], CellType.FILE);
-		        
-		        cell.setPath(filePath);
-		        cell.setOnMouseClicked(new EventHandler<MouseEvent>()
-				{
-				    @Override
-				    public void handle(MouseEvent mouseEvent)
-				    {
-				        if(mouseEvent.getClickCount() == 2){
-					        openNewTab(cell.getPath());
-				        }
-				    }
-				 });
-		   
-		        
-		        double offsetX = event.getScreenX() + dragContext.x;
-	            double offsetY = event.getScreenY() + dragContext.y;
-
-	            // adjust the offset in case we are zoomed
-	            double scale3 = graph1.getScale();
-
-	            offsetX /= scale3;
-	            offsetY /= scale3;
-
-	            cell.relocate(offsetX, offsetY);
-		        graph1.endUpdate();
-		        
-		        fromTreeToMapping = false;
-
-	    	}
+	    
 	    	
+    		Model model = graph.getModel();
 	    	
+	    	String separator = "\\";
+	    	String[] arr=filePath.replaceAll(Pattern.quote(separator), "\\\\").split("\\\\");
+	        graph.beginUpdate();
+	        FileCell cell = (FileCell) model.addCell(arr[arr.length - 1], CellType.FILE);
+	        
+	        cell.setPath(filePath);
+	        cell.setOnMouseClicked(new EventHandler<MouseEvent>()
+			{
+			    @Override
+			    public void handle(MouseEvent mouseEvent)
+			    {
+			        if(mouseEvent.getClickCount() == 2){
+				        openNewTab(cell.getPath());
+			        }
+			    }
+			 });
+	   
+	        
+	        double offsetX = event.getScreenX() + dragContext.x;
+            double offsetY = event.getScreenY() + dragContext.y;
+
+            // adjust the offset in case we are zoomed
+            double scale3 = graph.getScale();
+
+            offsetX /= scale3;
+            offsetY /= scale3;
+
+            cell.relocate(offsetX, offsetY);
+	        graph.endUpdate();
+	        
+	        fromTreeToMapping = false;
+
+  
 	    });
 		
 		//���丮 �ε� ��ư �׼�
@@ -505,7 +464,7 @@ public class MainController implements Initializable {
 	                  .add("filename", filepath);
 
 	            JsonArrayBuilder cellJSONArrayBuilder = Json.createArrayBuilder();
-	            for (Cell cell : graph1.getModel().getAllCells()) {
+	            for (Cell cell : graph.getModel().getAllCells()) {
 	               JsonObjectBuilder cellInfoBuilder = Json.createObjectBuilder()
 	                     .add("type", CellType.toInteger(cell.getCellType()))
 	                     .add("name", cell.getCellName())
@@ -517,7 +476,7 @@ public class MainController implements Initializable {
 	               cellJSONArrayBuilder.add(cellInfoBuilder.build());
 	            }
 	            JsonArrayBuilder edgeJSONArrayBuilder = Json.createArrayBuilder();
-	            for (Edge edge : graph1.getModel().getAllEdges()) {
+	            for (Edge edge : graph.getModel().getAllEdges()) {
 	               JsonObjectBuilder edgeInfoBuilder = Json.createObjectBuilder()
 	                     .add("src", edge.getSource().getCellID())
 	                     .add("dst", edge.getTarget().getCellID())
@@ -552,9 +511,9 @@ public class MainController implements Initializable {
 	               return;
 	            String filepath = newFile.getPath();
 
-	            Model model = graph1.getModel();
+	            Model model = graph.getModel();
 
-	            graph1.beginUpdate();
+	            graph.beginUpdate();
 	            model.getRemovedCells().addAll(model.getAllCells());
 	            model.getRemovedEdges().addAll(model.getAllEdges());
 	            try {
@@ -572,7 +531,7 @@ public class MainController implements Initializable {
 	                  double x = cellJSONObj.getJsonNumber("x").doubleValue();
 	                  double y = cellJSONObj.getJsonNumber("y").doubleValue();
 
-	                  Cell cell = addGraphComponents(name, type, graph1);
+	                  Cell cell = addGraphComponents(name, type, graph);
 	                  model.getCellMap().remove(String.valueOf(cell.getCellID()));
 	                  cell.setCellID(id);
 	                  model.getCellMap().put(String.valueOf(id), cell);
@@ -598,10 +557,15 @@ public class MainController implements Initializable {
 	               e.printStackTrace();
 	            }
 
-	            graph1.endUpdate();
+	            graph.endUpdate();
 	         }
 	      });
  	}
+	
+	private void addTimeline(String path) {
+		FileCell add_cell = new FileCell(path);
+		timeline.getChildren().add(add_cell);
+	}
 	
 	private void addMergeFile(String path) {
 		File txtfile = new File(path);
@@ -762,7 +726,7 @@ public class MainController implements Initializable {
 
 	      String msg = txtMsg.getText();
 	      txtMsg.clear();
-	      Cell relatedCell = addGraphComponents(msg, CellType.LABEL,graph1);
+	      Cell relatedCell = addGraphComponents(msg, CellType.LABEL,graph);
 
 	      new Thread(new Task<Integer>() {
 	         @Override
@@ -806,7 +770,7 @@ public class MainController implements Initializable {
 	                     JsonArray children = relatedJSONRoot.getJsonObject(i).getJsonArray("children");
 	                     for (int j=0; j<children.size(); j++) {
 	                        TitledPaneCell cell = new TitledPaneCell(children.getJsonObject(j).getString("name"));
-	                        cell.setGraph(graph1);
+	                        cell.setGraph(graph);
 	                        cell.setRelatedCell(relatedCell);
 	                        associatedGrid.add(cell, gridIdx++, 0);
 	                        if (gridIdx > 5) break;
