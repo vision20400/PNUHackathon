@@ -44,14 +44,14 @@ public class Main extends Application {
         model.addCell("Cell E", CellType.LABEL);
         model.addCell("Cell F", CellType.LABEL);
         model.addCell("Cell G", CellType.LABEL);
-
+/*
         model.addEdge("Cell A", "Cell B");
         model.addEdge("Cell A", "Cell C");
         model.addEdge("Cell B", "Cell C");
         model.addEdge("Cell C", "Cell D");
         model.addEdge("Cell B", "Cell E");
         model.addEdge("Cell D", "Cell F");
-        model.addEdge("Cell D", "Cell G");
+        model.addEdge("Cell D", "Cell G");*/
 
         graph.endUpdate();
 

@@ -9,6 +9,7 @@ public enum CellType {
     BUTTON,
     TITLEDPANE,
     FILE,
+   
     ;
 
 
@@ -28,6 +29,7 @@ public enum CellType {
 	                return 5;
 	            case FILE:
 	                return 6;
+
 	        }
 	        return 2;
 	    }
@@ -48,6 +50,7 @@ public enum CellType {
 	                return TITLEDPANE;
 	            case 6:
 	                return FILE;
+
 	        }
 	        return LABEL;
 	    }

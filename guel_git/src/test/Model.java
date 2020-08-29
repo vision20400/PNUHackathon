@@ -97,6 +97,7 @@ public class Model {
         case TITLEDPANE:
             newcell = new TitledPaneCell(id);
             break;
+       
         default:
             throw new UnsupportedOperationException("Unsupported type: " + type);
         }
@@ -117,7 +118,7 @@ public class Model {
         cellMap.put(String.valueOf( cell.getCellID()), cell);
     }
 
-    public void addEdge( String sourceId, String targetId) {
+    public void addEdge( String sourceId, String targetId , String edgeText) {
         Cell sourceCell = cellMap.get( sourceId);
         Cell targetCell = cellMap.get( targetId);
 
@@ -126,7 +127,7 @@ public class Model {
                 return;
         }
 
-        Edge edge = new Edge( sourceCell, targetCell);
+        Edge edge = new Edge( sourceCell, targetCell, edgeText);
 
         addedEdges.add(edge);
         sourceCell.linkedCells.add(targetCell);

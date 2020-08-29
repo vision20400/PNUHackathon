@@ -28,6 +28,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -41,9 +42,14 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.text.Text;
 import javafx.scene.web.HTMLEditor;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -75,6 +81,8 @@ public class MainController implements Initializable {
 	@FXML
 	private JFXTabPane mainTab;
 	@FXML
+	private JFXTabPane graphtab;
+	@FXML
 	private TextField txtMsg;
 	@FXML
 	private Button labelCell;
@@ -102,6 +110,11 @@ public class MainController implements Initializable {
 	private TitledPane associatedWords;
 	@FXML
 	private GridPane associatedGrid;
+	@FXML
+	private BorderPane mappingtab;
+	@FXML
+	private BorderPane timelinetab;
+	
 	
 	private String LoadPath;
 	private String filePath;
@@ -112,7 +125,12 @@ public class MainController implements Initializable {
 	@FXML
 	private BorderPane mapping;
 	
-	private Graph graph ;
+	private Graph graph1 ;
+	private Graph graph2 ;
+	
+    JsonReader relatedJSONReader;
+    JsonObject relatedJSONObject;
+    JsonArray relatedJSONRoot;
 	
 	private static boolean fromTreeToMapping = false;
     final DragContext dragContext = new DragContext();
@@ -135,8 +153,16 @@ public class MainController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 		
 		
-		graph = new Graph();
-	    mapping.setCenter(graph.getScrollPane());
+		graph1 = new Graph();
+		graph2 = new Graph();
+		
+		
+		
+		mappingtab.setCenter(graph1.getScrollPane());
+	    timelinetab.setCenter(graph2.getScrollPane());
+		
+
+	    
 	    
 	    split.setOnDragEntered(event -> {
 	    	if (treeV.getBoundsInParent().contains(event.getSceneX(), event.getSceneY()))
@@ -151,47 +177,99 @@ public class MainController implements Initializable {
 
 	    });
 	    split.setOnDragDone(event -> {
+	    	
 	    	if (fromTreeToMapping == false)
 	    		return;
 	    	if (mapping.getBoundsInParent().contains(dragContext.x, dragContext.y) == false)
 	    		return;
-	    		
-	    	Model model = graph.getModel();
+	    	if((graphtab.getSelectionModel().getSelectedItem().getText()).equals("íƒ€ì„ë¼ì¸") ) {
+	    		Model model = graph2.getModel();
+		    	
+		    	String separator = "\\";
+		    	String[] arr=filePath.replaceAll(Pattern.quote(separator), "\\\\").split("\\\\");
+		        graph2.beginUpdate();
+		        FileCell cell = (FileCell) model.addCell(arr[arr.length - 1], CellType.FILE);
+		        
+		        cell.setPath(filePath);
+		        cell.setOnMouseClicked(new EventHandler<MouseEvent>()
+				{
+				    @Override
+				    public void handle(MouseEvent mouseEvent)
+				    {
+				        if(mouseEvent.getClickCount() == 2){
+					        openNewTab(cell.getPath());
+				        }
+				    }
+				 });
+
+	            double offsetX = graph2.getScrollPane().getWidth()/2;
+	            double offsetY = graph2.getScrollPane().getHeight()/2;
+
+	            System.out.println(offsetY);
+	            // adjust the offset in case we are zoomed
+	            double scale2 = graph2.getScale();
+
+	            offsetX /= scale2;
+	            offsetY /= scale2 ;
+
+	            cell.relocate(offsetX, offsetY);
+	            
+	            TextInputDialog td = new TextInputDialog(); 
+                // setHeaderText 
+                td.setHeaderText("ì‚¬ê±´ì…ë ¥");              
+                td.showAndWait(); 
+            	
+            	
+            	cell.setCellName(td.getEditor().getText());
+            	cell.setLabel(td.getEditor().getText());
+            	
+		        graph2.endUpdate();
+		        
+		        fromTreeToMapping = false;
+
+	    		return;
+	    	}
+	    	else {
+	    		Model model = graph1.getModel();
+		    	
+		    	String separator = "\\";
+		    	String[] arr=filePath.replaceAll(Pattern.quote(separator), "\\\\").split("\\\\");
+		        graph1.beginUpdate();
+		        FileCell cell = (FileCell) model.addCell(arr[arr.length - 1], CellType.FILE);
+		        
+		        cell.setPath(filePath);
+		        cell.setOnMouseClicked(new EventHandler<MouseEvent>()
+				{
+				    @Override
+				    public void handle(MouseEvent mouseEvent)
+				    {
+				        if(mouseEvent.getClickCount() == 2){
+					        openNewTab(cell.getPath());
+				        }
+				    }
+				 });
+		   
+		        
+		        double offsetX = event.getScreenX() + dragContext.x;
+	            double offsetY = event.getScreenY() + dragContext.y;
+
+	            // adjust the offset in case we are zoomed
+	            double scale3 = graph1.getScale();
+
+	            offsetX /= scale3;
+	            offsetY /= scale3;
+
+	            cell.relocate(offsetX, offsetY);
+		        graph1.endUpdate();
+		        
+		        fromTreeToMapping = false;
+
+	    	}
 	    	
-	    	String separator = "\\";
-	    	String[] arr=filePath.replaceAll(Pattern.quote(separator), "\\\\").split("\\\\");
-	        graph.beginUpdate();
-	        FileCell cell = (FileCell) model.addCell(arr[arr.length - 1], CellType.FILE);
-	        
-	        cell.setPath(filePath);
-	        cell.setOnMouseClicked(new EventHandler<MouseEvent>()
-			{
-			    @Override
-			    public void handle(MouseEvent mouseEvent)
-			    {
-			        if(mouseEvent.getClickCount() == 2){
-				        openNewTab(cell.getPath());
-			        }
-			    }
-			 });
-	   
-	        
-	        double offsetX = event.getScreenX() + dragContext.x;
-            double offsetY = event.getScreenY() + dragContext.y;
-
-            // adjust the offset in case we are zoomed
-            double scale = graph.getScale();
-
-            offsetX /= scale;
-            offsetY /= scale;
-
-            cell.relocate(offsetX, offsetY);
-	        graph.endUpdate();
-	        
-	        fromTreeToMapping = false;
+	    	
 	    });
 		
-		//µğ·ºÅä¸® ·Îµå ¹öÆ° ¾×¼Ç
+		//ï¿½ï¿½ï¿½ä¸® ï¿½Îµï¿½ ï¿½ï¿½Æ° ï¿½×¼ï¿½
 		loadbtn.setOnAction((event) -> {
 			DirectoryChooser directorychooser = new DirectoryChooser();
 			directorychooser.setInitialDirectory(new File(System.getProperty("user.home")));
@@ -217,7 +295,7 @@ public class MainController implements Initializable {
         
 	   });
 		
-		//ÆÄÀÏÆ®¸® ¼û±â±â,º¸ÀÌ±â
+		//ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½,ï¿½ï¿½ï¿½Ì±ï¿½
 		binderbtn.setOnAction((event) -> {
 			if(split.getDividerPositions()[0] <= 0.1)
 				split.setDividerPositions(0.2);
@@ -225,12 +303,12 @@ public class MainController implements Initializable {
 				split.setDividerPositions(0.0);
 		});
 		
-		//»õÆÄÀÏ Ãß°¡
+		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½
 		newFilebtn.setOnAction((event) -> {
 			final HTMLEditor htmlEditor = new HTMLEditor();
 	        htmlEditor.setPrefHeight(245);
 			TabSetText n_tab = new TabSetText();
-			Tab tab = n_tab.createEditableTab("»õ ¹®¼­");
+			Tab tab = n_tab.createEditableTab("ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
 			
 		    //TextArea textArea = new TextArea();
 		    //textArea.appendText("");
@@ -238,7 +316,7 @@ public class MainController implements Initializable {
 		    mainTab.getTabs().add(tab);
 		});
 				
-		//¸ÊÇÎ ¼û±â±â,º¸ÀÌ±â
+		//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½,ï¿½ï¿½ï¿½Ì±ï¿½
 		mappingbtn.setOnAction((event) -> {
 			if(split.getDividerPositions()[1] > 0.7)
 				split.setDividerPositions(split.getDividerPositions()[0], 0.7);
@@ -246,7 +324,7 @@ public class MainController implements Initializable {
 				split.setDividerPositions(split.getDividerPositions()[0], 1.0);
 		});
 		
-		//ÆÄÀÏ ¿ÀÇÂ
+		//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		openFile.setOnAction(new EventHandler<ActionEvent>() {
 		    public void handle(ActionEvent event) {
 		        FileChooser newFileChooser = new FileChooser();
@@ -256,19 +334,19 @@ public class MainController implements Initializable {
 		        }
 		    }
 		});
-		//»õÆÄÀÏ Ãß°¡
+		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½
 		newFile.setOnAction((event) -> {
 			final HTMLEditor htmlEditor = new HTMLEditor();
 	        htmlEditor.setPrefHeight(245);
 			TabSetText n_tab = new TabSetText();
-			Tab tab = n_tab.createEditableTab("»õ ¹®¼­");
+			Tab tab = n_tab.createEditableTab("ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
 
 		    //TextArea textArea = new TextArea();
 		    //textArea.appendText("");
 		    tab.setContent(htmlEditor);
 		    mainTab.getTabs().add(tab);
 		});
-		//ÀúÀå
+		//ï¿½ï¿½ï¿½ï¿½
 		save.setOnAction((event) -> {
 			if (isTabExist()) {
 	            FileChooser saveFileChooser = new FileChooser();
@@ -278,7 +356,7 @@ public class MainController implements Initializable {
 	            }
 	        }
 		});
-		//ÇÁ¸°Æ®
+		//ï¿½ï¿½ï¿½ï¿½Æ®
 		print.setOnAction((event) -> {
 			if (isTabExist()) {
 		        PrinterJob printerJob = PrinterJob.createPrinterJob();
@@ -290,7 +368,7 @@ public class MainController implements Initializable {
 		        }
 		    }
         });
-		//½Å°æ¤¤¤¤
+		//ï¿½Å°æ¤¤ï¿½ï¿½
 		newWindow.setOnAction((event) -> {
 	        System.out.println("newWindow clicked");
 	        /*
@@ -304,7 +382,7 @@ public class MainController implements Initializable {
 			
 			*/
 		});
-		//Æ®¸® ¾ÆÀÌÅÛ µÎ¹ø  Å¬¸¯½Ã -¾ÆÁ÷ ±¸Çö ¤¤
+		//Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Î¹ï¿½  Å¬ï¿½ï¿½ï¿½ï¿½ -ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
 		treeV.setOnMouseClicked(new EventHandler<MouseEvent>()
 		{
 		    @Override
@@ -427,7 +505,7 @@ public class MainController implements Initializable {
 	                  .add("filename", filepath);
 
 	            JsonArrayBuilder cellJSONArrayBuilder = Json.createArrayBuilder();
-	            for (Cell cell : graph.getModel().getAllCells()) {
+	            for (Cell cell : graph1.getModel().getAllCells()) {
 	               JsonObjectBuilder cellInfoBuilder = Json.createObjectBuilder()
 	                     .add("type", CellType.toInteger(cell.getCellType()))
 	                     .add("name", cell.getCellName())
@@ -439,10 +517,11 @@ public class MainController implements Initializable {
 	               cellJSONArrayBuilder.add(cellInfoBuilder.build());
 	            }
 	            JsonArrayBuilder edgeJSONArrayBuilder = Json.createArrayBuilder();
-	            for (Edge edge : graph.getModel().getAllEdges()) {
+	            for (Edge edge : graph1.getModel().getAllEdges()) {
 	               JsonObjectBuilder edgeInfoBuilder = Json.createObjectBuilder()
 	                     .add("src", edge.getSource().getCellID())
-	                     .add("dst", edge.getTarget().getCellID());
+	                     .add("dst", edge.getTarget().getCellID())
+	                     .add("text", edge.getEdgeLable().getText());
 	               edgeJSONArrayBuilder.add(edgeInfoBuilder.build());
 	            }
 	            JsonArray cellJSONArray = cellJSONArrayBuilder.build();
@@ -473,9 +552,9 @@ public class MainController implements Initializable {
 	               return;
 	            String filepath = newFile.getPath();
 
-	            Model model = graph.getModel();
+	            Model model = graph1.getModel();
 
-	            graph.beginUpdate();
+	            graph1.beginUpdate();
 	            model.getRemovedCells().addAll(model.getAllCells());
 	            model.getRemovedEdges().addAll(model.getAllEdges());
 	            try {
@@ -493,7 +572,7 @@ public class MainController implements Initializable {
 	                  double x = cellJSONObj.getJsonNumber("x").doubleValue();
 	                  double y = cellJSONObj.getJsonNumber("y").doubleValue();
 
-	                  Cell cell = addGraphComponents(name, type);
+	                  Cell cell = addGraphComponents(name, type, graph1);
 	                  model.getCellMap().remove(String.valueOf(cell.getCellID()));
 	                  cell.setCellID(id);
 	                  model.getCellMap().put(String.valueOf(id), cell);
@@ -508,8 +587,9 @@ public class MainController implements Initializable {
 	                  JsonObject edgeJSONObj = edgeJSONArray.getJsonObject(i);
 	                  String srcCellID = String.valueOf(edgeJSONObj.getInt("src"));
 	                  String dstCellID = String.valueOf(edgeJSONObj.getInt("dst"));
+	                  String edgeText = edgeJSONObj.getString("text");
 
-	                  model.addEdge(srcCellID, dstCellID);
+	                  model.addEdge(srcCellID, dstCellID, edgeText);
 	               }
 	               fr.close();
 	            } catch (FileNotFoundException e) {
@@ -518,7 +598,7 @@ public class MainController implements Initializable {
 	               e.printStackTrace();
 	            }
 
-	            graph.endUpdate();
+	            graph1.endUpdate();
 	         }
 	      });
  	}
@@ -531,7 +611,7 @@ public class MainController implements Initializable {
 		mergeHBox.getChildren().add(text);
 	}
 
-	//ÆÄÀÏ ÀúÀå
+	//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		 
 	private void saveFile(File saveFile) {
 		final TextArea htmlCode = new TextArea();
@@ -549,13 +629,13 @@ public class MainController implements Initializable {
 	
 	}
 
-	//ÅÇ Á¸Á¦¿©ºÎ
+	//ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	private boolean isTabExist() {
 		return mainTab.getSelectionModel().getSelectedItem() != null;
 	}
 
 
-	//¼±ÅÃÇÑ ÆÄÀÏ ÅÇ¿¡ Ãß°¡
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ç¿ï¿½ ï¿½ß°ï¿½
 		public void openNewTab(String path){
 			File txtFile = new File(path);
 			final HTMLEditor htmlEditor = new HTMLEditor();
@@ -565,24 +645,24 @@ public class MainController implements Initializable {
 			Tab tab = n_tab.createEditableTab(txtFile.getName());
 		    
 		    try {
-			       // ¹ÙÀÌÆ® ´ÜÀ§·Î ÆÄÀÏÀĞ±â
-			        String filePath = path; // ´ë»ó ÆÄÀÏ
-			        FileInputStream fileStream = null; // ÆÄÀÏ ½ºÆ®¸²
+			       // ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ğ±ï¿½
+			        String filePath = path; // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+			        FileInputStream fileStream = null; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ®ï¿½ï¿½
 			        
-			        fileStream = new FileInputStream( filePath );// ÆÄÀÏ ½ºÆ®¸² »ı¼º
-			        //¹öÆÛ ¼±¾ğ
+			        fileStream = new FileInputStream( filePath );// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+			        //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 			        byte[ ] readBuffer = new byte[fileStream.available()];
 			        while (fileStream.read( readBuffer ) != -1){}
 			       
 			        htmlEditor.setHtmlText(new String(readBuffer));
-			        fileStream.close(); //½ºÆ®¸² ´İ±â
+			        fileStream.close(); //ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½İ±ï¿½
 			    } catch (Exception e) {
 				e.getStackTrace();
 			    }
 		    
 		    
 		    tab.setContent(htmlEditor);
-		    //tabpane »õ·Î Ãß°¡ÇßÀ»¶§ ¿ø·¡ ´­·¯Á®ÀÖ¾úÀ¸¸é ÀÚµ¿À¸·Î ±× tabÀ¸·Î °¡µµ·Ï ¸¸µé¾î¾ß µÊ(¹Ì¿Ï¼º)
+		    //tabpane ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¾ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ tabï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½(ï¿½Ì¿Ï¼ï¿½)
 		    mainTab.getTabs().add(tab);
 		 }
 		public void openallfileTab(String path) {
@@ -635,7 +715,7 @@ public class MainController implements Initializable {
 		}
 		
 		
-	//µğ·ºÅä¸®·Î Æ®¸® ¸¸µé±â	
+	//ï¿½ï¿½ï¿½ä¸®ï¿½ï¿½ Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½	
 	public TreeItem<String> getNodesForDirectory(File directory) {
 		   //Returns a TreeItem representation of the specified directory
            TreeItem<String> root = new TreeItem<String>(directory.getName());
@@ -653,7 +733,7 @@ public class MainController implements Initializable {
            return root;
 	 }
 	
-	// ¼±ÅÃÇÑ Æ®¸®¾ÆÀÌÅÛ °æ·Î ±¸ÇÏ±â
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Æ®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï±ï¿½
 	public String getTreePath(TreeItem<PathItem> item) {
 		TreeItem<PathItem> cur_item = item;
 		String path = "";
@@ -672,84 +752,92 @@ public class MainController implements Initializable {
 	}
 	
 
-	public void clickHandler() {
-		associatedGrid.getChildren().clear();
 
-		String msg = txtMsg.getText();
-		txtMsg.clear();
-		Cell relatedCell = addGraphComponents(msg, CellType.LABEL);
+	   public void clickHandler() {
+	      associatedGrid.getChildren().clear();
 
-		Platform.runLater(new Runnable() {
-			@Override
-			public void run() {
-				//associatedGrid.getChildren().clear();
-				try {
-					String URL = "https://opendict.korean.go.kr/search/searchResult?focus_name=query&query=";
-					URL += msg;
+	      if((graphtab.getSelectionModel().getSelectedItem().getText()).equals("íƒ€ì„ë¼ì¸") ) {
+	         return;
+	      }
 
-					Document doc = Jsoup.connect(URL).get();
-					Elements elem = null;
-					for (int i=1; i<5; i++) {
-						Elements num = doc.select("#searchPaging > div.section.floatL > div.group.mt30 > ul.panel > li > div > div.search_result > dl:nth-child(" + i + ") > dd:nth-child(2) > a > span.word_no.mr5");
-						if (num.text().equals("¡¸001¡¹") == false)
-							continue;	
-						elem = doc.select("#searchPaging > div.section.floatL > div.group.mt30 > ul.panel > li > div > div.search_result > dl:nth-child(" + i + ") > dd:nth-child(2) > a");
-						URL = "https://opendict.korean.go.kr/";
-						URL += elem.attr("href");
-						break;
-					}
-					if (elem == null) {
-						System.out.println("crawling error");
-						return;
-					}
-						
+	      String msg = txtMsg.getText();
+	      txtMsg.clear();
+	      Cell relatedCell = addGraphComponents(msg, CellType.LABEL,graph1);
 
-					doc = Jsoup.connect(URL).get();
-					elem = doc.select("div[id=\"wordmap_json_str\"]");
+	      new Thread(new Task<Integer>() {
+	         @Override
+	         protected Integer call() throws Exception {
+	            try {
+	               String URL = "https://opendict.korean.go.kr/search/searchResult?focus_name=query&query=";
+	               URL += msg;
 
-					JsonReader jsonReader = Json.createReader(new StringReader(elem.text()));
-					JsonObject jsonObject = jsonReader.readObject();
-					JsonArray root = jsonObject.getJsonArray("children");
-					
-					int gridIdx = 0;
-					for (int i=0; i<root.size(); i++) {
-						String name = root.getJsonObject(i).getString("name");
-						if (name.length() == "ºñ½ÁÇÑ¸»".length() && name.equals("ºñ½ÁÇÑ¸»") == true) {
-							JsonArray children = root.getJsonObject(i).getJsonArray("children");
-							for (int j=0; j<children.size(); j++) {
-								TitledPaneCell cell = new TitledPaneCell(children.getJsonObject(j).getString("name"));
-								cell.setGraph(graph);
-								cell.setRelatedCell(relatedCell);
-								associatedGrid.add(cell, gridIdx++, 0);
-								if (gridIdx > 5) break;
-							}
-							break;
-						}
-					}
-				} catch (Exception e) {
-					System.out.println("crawling error");
-				}
-			}
-		});
-	}
+	               Document doc = Jsoup.connect(URL).get();
+	               Elements elem = null;
+	               for (int i=1; i<5; i++) {
+	                  Elements num = doc.select("#searchPaging > div.section.floatL > div.group.mt30 > ul.panel > li > div > div.search_result > dl:nth-child(" + i + ") > dd:nth-child(2) > a > span.word_no.mr5");
+	                  if (num.text().contains("001") == false)
+	                     continue;
+	                  elem = doc.select("#searchPaging > div.section.floatL > div.group.mt30 > ul.panel > li > div > div.search_result > dl:nth-child(" + i + ") > dd:nth-child(2) > a");
+	                  URL = "https://opendict.korean.go.kr/";
+	                  URL += elem.attr("href");
+	                  break;
+	               }
+	               if (elem == null) {
+	                  System.out.println("crawling error");
+	                  return -1;
+	               }
+
+	               doc = Jsoup.connect(URL).get();
+	               elem = doc.select("div[id=\"wordmap_json_str\"]");
+
+	               relatedJSONReader = Json.createReader(new StringReader(elem.text()));
+	               relatedJSONObject = relatedJSONReader.readObject();
+	               relatedJSONRoot = relatedJSONObject.getJsonArray("children");
+	            } catch (Exception e) {
+	               System.out.println("crawling error");
+	               return -1;
+	            }
+
+	            Platform.runLater(() -> {
+	               int gridIdx = 0;
+	               for (int i=0; i<relatedJSONRoot.size(); i++) {
+	                  String name = relatedJSONRoot.getJsonObject(i).getString("name");
+	                  if (name.length() == "ë¹„ìŠ·í•œë§".length() && name.equals("ë¹„ìŠ·í•œë§") == true) {
+	                     JsonArray children = relatedJSONRoot.getJsonObject(i).getJsonArray("children");
+	                     for (int j=0; j<children.size(); j++) {
+	                        TitledPaneCell cell = new TitledPaneCell(children.getJsonObject(j).getString("name"));
+	                        cell.setGraph(graph1);
+	                        cell.setRelatedCell(relatedCell);
+	                        associatedGrid.add(cell, gridIdx++, 0);
+	                        if (gridIdx > 5) break;
+	                     }
+	                     break;
+	                  }
+	               }
+	            });
+
+	            return 0;
+	         }
+	      }).start();
+	   }
 	
-	private Cell addGraphComponents(String name, CellType type) {
+	private Cell addGraphComponents(String name, CellType type, Graph graph) {
         Model model = graph.getModel();
 
         graph.beginUpdate();
         Cell cell = model.addCell(name, type);
-        cell.relocate(mapping.getWidth()/2, mapping.getHeight()/2);
+        cell.relocate(graph.getScrollPane().getWidth()/2, graph.getScrollPane().getHeight()/2);
         graph.endUpdate();
         
         return cell;
     }
 
-// ÆÄÀÏ È®ÀåÀÚ ±¸ºĞ ÇÏ´Â°Å ±Ùµ¥ filefilter¿¡ ÀÌ·± ±â´É ÀÖ´Âµí
+// ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ï´Â°ï¿½ ï¿½Ùµï¿½ filefilterï¿½ï¿½ ï¿½Ì·ï¿½ ï¿½ï¿½ï¿½ ï¿½Ö´Âµï¿½
 	public static boolean FileExtension(String name) {
         String fileName = name;
         String ext = fileName.substring(fileName.lastIndexOf(".") + 1,
                 fileName.length());
-        final String[] extension = { "txt","jpg"};// È®ÀåÀÚ ±¸º° 
+        final String[] extension = { "txt","jpg"};// È®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
  
         int len = extension.length;
         for (int i = 0; i < len; i++) {
@@ -759,7 +847,7 @@ public class MainController implements Initializable {
         }
         return false;
     }
-	//drag and drop ±¸Çö
+	//drag and drop ï¿½ï¿½ï¿½ï¿½
 	private void setDragDropEvent(final PathTreeCell cell) {
         // The drag starts on a gesture source
         cell.setOnDragDetected(event -> {

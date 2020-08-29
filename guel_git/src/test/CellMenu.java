@@ -53,15 +53,13 @@ public class CellMenu {
             @Override
             public void handle(ActionEvent event) {
             	
-            	CellType type = parent.getCellType();
+            	
+            	TextInputDialog td;
             	
             	
-            	switch (type) {
-                
-                case LABEL:
                     LabelCell labelcell = (LabelCell)parent;
                     // create a text input dialog 
-                    TextInputDialog td = new TextInputDialog(labelcell.cellName); 
+                    td = new TextInputDialog(labelcell.cellName); 
                     // setHeaderText 
                     td.setHeaderText("rename");              
                     td.showAndWait(); 
@@ -70,21 +68,7 @@ public class CellMenu {
                 	labelcell.setCellName(td.getEditor().getText());
                 	labelcell.setLabel(td.getEditor().getText());
                 	graph.endUpdate();
-                    break;
-                case FILE:
-                	FileCell fileCell = (FileCell)parent;
-                	
-                	    
-                	
-               
-                    break;
-                
-                default:
-                    throw new UnsupportedOperationException("Unsupported type: " + type);
-                }
-
-            	 
-            	
+              
             }
         });
         

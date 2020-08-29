@@ -130,13 +130,16 @@
                      </graphic></Button>
                   <Button fx:id="template1btn" mnemonicParsing="false">
                      <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" />
+                     </graphic></Button>
+                  <Button mnemonicParsing="false">
+                     <graphic>
                         <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../../images/Profile.png" />
                            </image>
                         </ImageView>
                      </graphic></Button>
-                  <Button mnemonicParsing="false" text="Template2" />
                   <ToggleButton fx:id="mergeToggle" mnemonicParsing="false">
                      <graphic>
                         <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" />
@@ -150,7 +153,7 @@
       </VBox>
    </top>
    <center>
-      <SplitPane fx:id="split" dividerPositions="0.007827788649706457, 0.9941291585127201">
+      <SplitPane fx:id="split" dividerPositions="0.00784313725490196, 0.6421568627450981">
         <items>
             <AnchorPane>
                <children>
@@ -209,6 +212,28 @@
                      </tabs>
                   </JFXTabPane>
                </top>
+               <center>
+                  <JFXTabPane fx:id="graphtab" BorderPane.alignment="CENTER">
+                     <tabs>
+                        <Tab text="맵핑">
+                          <content>
+                            <AnchorPane>
+                                 <children>
+                                    <BorderPane fx:id="mappingtab" prefHeight="435.0" prefWidth="364.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                 </children></AnchorPane>
+                          </content>
+                        </Tab>
+                        <Tab text="타임라인">
+                          <content>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0">
+                                 <children>
+                                    <BorderPane fx:id="timelinetab" prefHeight="435.0" prefWidth="364.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                 </children></AnchorPane>
+                          </content>
+                        </Tab>
+                     </tabs>
+                  </JFXTabPane>
+               </center>
             </BorderPane>
         </items>
       </SplitPane>

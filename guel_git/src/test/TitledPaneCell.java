@@ -30,7 +30,7 @@ public class TitledPaneCell extends Cell {
             graph.beginUpdate();
             Cell thisCell = graph.getModel().addCell(label.getText(), CellType.LABEL);
             thisCell.relocate(relatedCell.getLayoutX(), relatedCell.getLayoutY() + 100);
-            graph.getModel().addEdge(String.valueOf(relatedCell.getCellID()), String.valueOf(thisCell.getCellID()));
+            graph.getModel().addEdge(String.valueOf(relatedCell.getCellID()), String.valueOf(thisCell.getCellID()),"");
             graph.endUpdate();
             label.setDisable(true);
         });

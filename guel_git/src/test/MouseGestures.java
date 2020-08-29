@@ -63,6 +63,7 @@ public class MouseGestures {
         @Override
         public void handle(MouseEvent event) {
             Cell cell = (Cell) event.getSource();
+
             double scale = graph.getScale();
 
             dragContext.x = cell.getBoundsInParent().getMinX() * scale - event.getScreenX();
@@ -76,7 +77,7 @@ public class MouseGestures {
         @Override
         public void handle(MouseEvent event) {
             Node node = (Node) event.getSource();
-
+   
             double offsetX = event.getScreenX() + dragContext.x;
             double offsetY = event.getScreenY() + dragContext.y;
 
@@ -88,15 +89,17 @@ public class MouseGestures {
 
             node.relocate(offsetX, offsetY);
             
-           // System.out.println("dragged");
+           
+
         }
     };
 
     EventHandler<MouseEvent> onMouseReleasedEventHandler = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent event) {
+        	
             Cell cell = (Cell) event.getSource();
-
+        
             for (Cell _cell : graph.getModel().allCells) {
                 if (cell.equals(_cell)) {
                     continue;
@@ -108,7 +111,7 @@ public class MouseGestures {
                     cell.setLayoutY(prevPositions.get(cell).y);
 
                     graph.beginUpdate();
-                    graph.getModel().addEdge(String.valueOf(cell.cellID), String.valueOf(_cell.cellID));
+                    graph.getModel().addEdge(String.valueOf(cell.cellID), String.valueOf(_cell.cellID),"");
                     graph.endUpdate();
 
                     break;
@@ -133,11 +136,13 @@ public class MouseGestures {
         graph.beginUpdate();
 
         
-        model.addEdge(sourceId,targetId);
+        model.addEdge(sourceId,targetId,"");
         
 
         graph.endUpdate();
 
     }
+    
+    
     
 }
