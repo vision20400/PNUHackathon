@@ -18,8 +18,8 @@ public class TabSetText {
 
 	public Tab createEditableTab(String text) {  
 		
-		final Label label = new Label(text);  
-		final Tab tab = new Tab();  
+		final Label label = new Label(text); 
+		final Tab tab = new Tab();
 		tab.setGraphic(label);  
 		final TextField textField = new TextField(); 
 		
@@ -28,10 +28,10 @@ public class TabSetText {
 		  @Override  
 		  public void handle(MouseEvent event) {  
 		    if (event.getClickCount()==2) {  
-		      textField.setText(label.getText());  
-		      tab.setGraphic(textField);  
-		      textField.selectAll();  
-		      textField.requestFocus();  
+		      textField.setText(label.getText());
+		      tab.setGraphic(textField);
+		      textField.selectAll();
+		      textField.requestFocus();
 		    }  
 		  }  
 		  
@@ -39,7 +39,7 @@ public class TabSetText {
 		
 		
 		textField.setOnAction(new EventHandler<ActionEvent>() {  
-		  @Override  
+		  @Override
 		  public void handle(ActionEvent event) {  
 		    label.setText(textField.getText());  
 		    tab.setGraphic(label);  
@@ -47,8 +47,8 @@ public class TabSetText {
 		});
 		
 		
-		textField.focusedProperty().addListener(new ChangeListener<Boolean>() {  
-		  @Override  
+		textField.focusedProperty().addListener(new ChangeListener<Boolean>() {
+		  @Override
 		  public void changed(ObservableValue<? extends Boolean> observable,  
 		      Boolean oldValue, Boolean newValue) {  
 		    if (! newValue) {  
