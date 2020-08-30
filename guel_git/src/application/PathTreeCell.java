@@ -201,7 +201,7 @@ public class PathTreeCell extends TreeCell<PathItem>{
         	        		Path source = getTreeItem().getValue().getPath();
             	        	String copyfile = getTreeItem().getValue().toString();
             	        	System.out.println(copyfile);
-            	        	String copiedfile = copyfile.replaceFirst("(\\.[^\\.]*)?$", "-num");
+            	        	String copiedfile = copyfile.replaceFirst("(\\.[^\\.]*)?$", "-copy");
             	        	Path target = source.resolveSibling(copiedfile);
 							Files.copy(source, target, StandardCopyOption.COPY_ATTRIBUTES);
 							TreeItem<PathItem> item = PathTreeItem.createNode(new PathItem(target));
