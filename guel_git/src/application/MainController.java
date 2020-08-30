@@ -9,6 +9,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
@@ -31,6 +33,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.print.PrinterJob;
@@ -114,6 +117,8 @@ public class MainController implements Initializable {
 	private TitledPane associatedWords;
 	@FXML
 	private GridPane associatedGrid;
+	@FXML
+	private Map <String, Tab> openTabs = new HashMap<>();
 	
 	private String LoadPath;
 	private String filePath;
@@ -420,8 +425,11 @@ public class MainController implements Initializable {
 						htmlEditor.setHtmlText(textmerge);
 						tab.setContent(htmlEditor);
 						mainTab.getTabs().add(tab);
+						addallcontents.printStack();
 						mergeHBox.getChildren().clear();
 						addallcontents.clear();
+						textmerge = "";
+						addallcontents.printStack();
 					});
 				}
 			};
@@ -619,13 +627,30 @@ public class MainController implements Initializable {
 			        htmlEditor.setHtmlText(new String(readBuffer));
 			        fileStream.close(); //스트림 닫기
 			    } catch (Exception e) {
+			    	
 				e.getStackTrace();
 			    }
 		    
 		    
 		    tab.setContent(htmlEditor);
 		    //tabpane 새로 추가했을때 원래 눌러져있었으면 자동으로 그 tab으로 가도록 만들어야 됨(미완성)
-		    mainTab.getTabs().add(tab);
+		    if(openTabs.containsKey(path)) {
+		    	mainTab.getSelectionModel().select(openTabs.get(tab));
+		    }
+		    else {
+		    	mainTab.getTabs().add(tab);
+		    	openTabs.put(path, tab);
+		    	tab.setOnClosed(e -> openTabs.remove(path));
+		    }
+		   
+		    //System.out.println(mainTab.getContextMenu().getItems().toString());
+		    /*if(mainTab.getTabs().contains(tab)) {
+		    	System.out.println("1");
+		    	
+		    }
+		    else {
+		    	mainTab.getTabs().add(tab);
+		    }*/
 		 }
 		public void openallfileTab(String path) {
 			File dir = new File(path);
@@ -673,7 +698,14 @@ public class MainController implements Initializable {
 			}
 			htmlEditor.setHtmlText(allfile);
 			tab.setContent(htmlEditor);
-			mainTab.getTabs().add(tab);
+			if(openTabs.containsKey(path)) {
+		    	mainTab.getSelectionModel().select(openTabs.get(tab));
+		    }
+		    else {
+		    	mainTab.getTabs().add(tab);
+		    	openTabs.put(path, tab);
+		    	tab.setOnClosed(e -> openTabs.remove(path));
+		    }
 		}
 		
 		
