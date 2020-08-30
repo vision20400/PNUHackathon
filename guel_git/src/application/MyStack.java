@@ -5,16 +5,22 @@ import java.util.EmptyStackException;
 public class MyStack {
 	private int top;
 	private int stackSize;
+	private int front;
     private String[] array;
  
     public MyStack(int stackSize) {
         top = -1;
+        front = -1;
         this.stackSize = stackSize;
         array = new String[this.stackSize];
     }
     
     public boolean isEmpty() {
-        return (top == -1);
+    	if(front == top) {
+    		front = -1;
+    		top = -1;
+    	}
+        return (front == top);
     }
     
     
@@ -37,10 +43,11 @@ public class MyStack {
             //throw new EmptyStackException();
             return null;
         } else { 
-            System.out.println("Deleted Item : " + array[top]);
-            int num = top;
-            top--;
-            return array[num];
+            System.out.println("Deleted Item : " + array[front+1]);
+            //int num = top;
+            //top--;
+            front = (front + 1)%stackSize;
+            return array[front];
         }
     }
     
