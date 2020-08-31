@@ -127,7 +127,7 @@ public class PathTreeCell extends TreeCell<PathItem>{
                     return newDir;
             }
         });
-        //create new file(txt) ���ο� txt���� ����
+        //create new file(txt) 占쏙옙占싸울옙 txt占쏙옙占쏙옙 占쏙옙占쏙옙
         MenuItem addtxtfile = new MenuItem("AddTXTFile");
         addtxtfile.setOnAction(new EventHandler<ActionEvent>() {
         	public void handle(ActionEvent t) {
@@ -157,7 +157,7 @@ public class PathTreeCell extends TreeCell<PathItem>{
         		
         	}
         });
-        //���� �ҷ�����(������ ������ ��������, ���� ���丮���� �ҷ����� ���̱� ������)
+        //占쏙옙占쏙옙 占쌀뤄옙占쏙옙占쏙옙(占쏙옙占쏙옙占쏙옙 占쏙옙占쏙옙占쏙옙 占쏙옙占쏙옙占쏙옙占쏙옙, 占쏙옙占쏙옙 占쏙옙占썰리占쏙옙占쏙옙 占쌀뤄옙占쏙옙占쏙옙 占쏙옙占싱깍옙 占쏙옙占쏙옙占쏙옙)
         MenuItem addfile = new MenuItem("AddFile");
         addfile.setOnAction(new EventHandler<ActionEvent>() {
         	public void handle(ActionEvent t) {
@@ -198,7 +198,7 @@ public class PathTreeCell extends TreeCell<PathItem>{
                 }
             });
         });
-        //���� ���丮�� �ִ� ���� �̸� �ٲٱ�(������)
+        //占쏙옙占쏙옙 占쏙옙占썰리占쏙옙 占쌍댐옙 占쏙옙占쏙옙 占싱몌옙 占쌕꾸깍옙(占쏙옙占쏙옙占쏙옙)
         MenuItem rename = new MenuItem("rename");
         rename.setOnAction(event -> {
         	//rename the file
@@ -250,13 +250,20 @@ public class PathTreeCell extends TreeCell<PathItem>{
     	        FileCell cell = new FileCell(arr[arr.length - 1]);
     	        
     	        cell.setPath(path);
+    	        TextInputDialog td = new TextInputDialog(""); 
+                // setHeaderText 
+                td.setHeaderText("사건을 입력해주세요");              
+                td.showAndWait(); 
+            	
+            	cell.setCellName(td.getEditor().getText());
+            	cell.setLabel(td.getEditor().getText());
     	        cell.setOnMouseClicked(new EventHandler<MouseEvent>()
     			{
     			    @Override
     			    public void handle(MouseEvent mouseEvent)
     			    {
     			        if(mouseEvent.getClickCount() == 2){
-    				       // openNewTab(cell.getPath());
+    				        openNewTab(cell.getPath());
     			        	System.out.println(cell.getPath());
     			        }
     			    }
@@ -378,19 +385,18 @@ public class PathTreeCell extends TreeCell<PathItem>{
 		File txtFile = new File(path);
 		final HTMLEditor htmlEditor = new HTMLEditor();
         htmlEditor.setPrefHeight(245);
-        
 		TabSetText n_tab = new TabSetText();
 		Tab tab = n_tab.createEditableTab(txtFile.getName());
-	    
 	    try {
 		       // 바이트 단위로 파일읽기
 		        String filePath = path; // 대상 파일
 		        FileInputStream fileStream = null; // 파일 스트림
 		        
 		        fileStream = new FileInputStream( filePath );// 파일 스트림 생성
+		        
 		        //버퍼 선언
 		        byte[ ] readBuffer = new byte[fileStream.available()];
-		        while (fileStream.read( readBuffer ) != -1){}
+		        while (fileStream.available() > 0 && fileStream.read( readBuffer ) != -1){}
 		       
 		        htmlEditor.setHtmlText(new String(readBuffer));
 		        fileStream.close(); //스트림 닫기

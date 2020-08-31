@@ -88,7 +88,11 @@ public class Edge extends Group {
       		 
             @Override
             public void handle(ActionEvent event) {
-            	getChildren().removeAll(line,label,textField);
+            	graph.beginUpdate();
+            	getChildren().removeAll( line, label, textField);
+            	graph.endUpdate();
+            	
+            	graph.getModel().removeEdge(String.valueOf(source.getCellID()), String.valueOf(target.getCellID()));
             }
         });
         
