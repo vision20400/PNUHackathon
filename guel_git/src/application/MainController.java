@@ -8,6 +8,7 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -27,14 +28,21 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.print.PrinterJob;
+import javafx.scene.Group;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DragEvent;
@@ -51,15 +59,21 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.web.HTMLEditor;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import javafx.util.Callback;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import test.*;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.TableColumn.CellEditEvent;
+import javafx.scene.control.cell.PropertyValueFactory;
 import test.Cell;
 
 
@@ -105,6 +119,8 @@ public class MainController implements Initializable {
 	@FXML
 	private Button mergebutton;
 	@FXML
+	private Button profile; 
+	@FXML
 	private Button saveMap;
 	@FXML
 	private Button loadMap;
@@ -128,6 +144,15 @@ public class MainController implements Initializable {
 	
 	private VBox timeline = new VBox();
 
+	private TableView<Person> table = new TableView<Person>();
+	private final ObservableList<Person> data = FXCollections
+			.observableArrayList(new Person("Jacob", "Smith",
+					"jacob.smith@example.com"), new Person("Isabella",
+					"Johnson", "isabella.johnson@example.com"), new Person(
+					"Ethan", "Williams", "ethan.williams@example.com"),
+					new Person("Emma", "Jones", "emma.jones@example.com"),
+					new Person("Michael", "Brown", "michael.brown@example.com"));
+	
 	
     JsonReader relatedJSONReader;
     JsonObject relatedJSONObject;
@@ -439,6 +464,114 @@ public class MainController implements Initializable {
 		    mainTab.getTabs().add(tab);
 		});
 		
+		profile.setOnAction((event)->{
+			try{
+				
+				
+			    FXMLLoader loader = new FXMLLoader(getClass().getResource("popup.fxml"));
+			    BorderPane root = (BorderPane) loader.load();
+			    Scene scene = new Scene(root);
+			    
+			    Stage stage = new Stage();
+			    stage.setTitle("popup");
+			    stage.setWidth(450);
+				stage.setHeight(550);
+		
+				table = new TableView<Person>();
+			    
+			    final Label label = new Label("Relation To Map");
+				label.setFont(new Font("Arial", 20));
+
+				table.setEditable(true);
+				Callback<TableColumn, TableCell> cellFactory = new Callback<TableColumn, TableCell>() {
+					public TableCell call(TableColumn p) {
+						return new EditingCell();
+					}
+				};
+
+				TableColumn firstNameCol = new TableColumn("Source");
+				firstNameCol.setMinWidth(100);
+				firstNameCol
+						.setCellValueFactory(new PropertyValueFactory<Person, String>(
+								"firstName"));
+				firstNameCol.setCellFactory(cellFactory);
+				firstNameCol
+						.setOnEditCommit(new EventHandler<CellEditEvent<Person, String>>() {
+							@Override
+							public void handle(CellEditEvent<Person, String> t) {
+								((Person) t.getTableView().getItems()
+										.get(t.getTablePosition().getRow()))
+										.setFirstName(t.getNewValue());
+							}
+						});
+
+				TableColumn lastNameCol = new TableColumn("Target");
+				lastNameCol.setMinWidth(100);
+				lastNameCol
+						.setCellValueFactory(new PropertyValueFactory<Person, String>(
+								"lastName"));
+				lastNameCol.setCellFactory(cellFactory);
+				lastNameCol
+						.setOnEditCommit(new EventHandler<CellEditEvent<Person, String>>() {
+							@Override
+							public void handle(CellEditEvent<Person, String> t) {
+								((Person) t.getTableView().getItems()
+										.get(t.getTablePosition().getRow()))
+										.setLastName(t.getNewValue());
+							}
+						});
+
+				TableColumn emailCol = new TableColumn("Relation");
+				emailCol.setMinWidth(200);
+				emailCol.setCellValueFactory(new PropertyValueFactory<Person, String>(
+						"email"));
+				emailCol.setCellFactory(cellFactory);
+				emailCol.setOnEditCommit(new EventHandler<CellEditEvent<Person, String>>() {
+					@Override
+					public void handle(CellEditEvent<Person, String> t) {
+						((Person) t.getTableView().getItems()
+								.get(t.getTablePosition().getRow())).setEmail(t
+								.getNewValue());
+					}
+				});
+
+				table.setItems(data);
+				table.getColumns().addAll(firstNameCol, lastNameCol, emailCol);
+
+				final TextField addFirstName = new TextField();
+				addFirstName.setPromptText("First Name");
+				addFirstName.setMaxWidth(firstNameCol.getPrefWidth());
+				final TextField addLastName = new TextField();
+				addLastName.setMaxWidth(lastNameCol.getPrefWidth());
+				addLastName.setPromptText("Last Name");
+				final TextField addEmail = new TextField();
+				addEmail.setMaxWidth(emailCol.getPrefWidth());
+				addEmail.setPromptText("Email");
+
+				final VBox vbox = new VBox();
+				final HBox hbox = new HBox();
+				TextField text1 = new TextField();
+				TextField text2 = new TextField();
+				TextField text3 = new TextField();
+
+				Button submit = new Button();
+				
+				vbox.setSpacing(5);
+				vbox.setPadding(new Insets(10, 0, 0, 10));
+				hbox.getChildren().addAll(text1,text2,text3,submit);
+				vbox.getChildren().addAll(label, table,hbox);
+
+				root.setCenter(vbox);
+				//((Group) scene.getRoot()).getChildren().addAll(vbox);
+			    
+			    stage.setScene( scene);
+			    stage.show();
+			    
+			  }catch(Exception e) {
+			  
+			  }
+		});
+		
 		txtMsg.setOnKeyPressed(new EventHandler<KeyEvent> () {
 		    @Override
 		      public void handle(KeyEvent event) {
@@ -720,10 +853,6 @@ public class MainController implements Initializable {
 	   public void clickHandler() {
 	      associatedGrid.getChildren().clear();
 
-	      if((graphtab.getSelectionModel().getSelectedItem().getText()).equals("타임라인") ) {
-	         return;
-	      }
-
 	      String msg = txtMsg.getText();
 	      txtMsg.clear();
 	      Cell relatedCell = addGraphComponents(msg, CellType.LABEL,graph);
@@ -915,4 +1044,183 @@ public class MainController implements Initializable {
     private TreeItem<PathItem> createNode(PathItem pathItem) {
         return PathTreeItem.createNode(pathItem);
     }
+    
+    public static class Person {
+
+		private final SimpleStringProperty firstName;
+		private final SimpleStringProperty lastName;
+		private final SimpleStringProperty email;
+
+		private Person(String fName, String lName, String email) {
+			this.firstName = new SimpleStringProperty(fName);
+			this.lastName = new SimpleStringProperty(lName);
+			this.email = new SimpleStringProperty(email);
+		}
+
+		public String getFirstName() {
+			return firstName.get();
+		}
+
+		public void setFirstName(String fName) {
+			firstName.set(fName);
+		}
+
+		public String getLastName() {
+			return lastName.get();
+		}
+
+		public void setLastName(String fName) {
+			lastName.set(fName);
+		}
+
+		public String getEmail() {
+			return email.get();
+		}
+
+		public void setEmail(String fName) {
+			email.set(fName);
+		}
+	}
+
+	class EditingCell extends TableCell<Person, String> {
+
+		private TextField textField;
+
+		public EditingCell() {
+		}
+
+		@Override
+		public void startEdit() {
+			if (!isEmpty()) {
+				super.startEdit();
+				if (textField == null) {
+					createTextField();
+				}
+
+				setGraphic(textField);
+				setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+				// textField.selectAll();
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						textField.requestFocus();
+						textField.selectAll();
+					}
+				});
+			}
+		}
+
+		@Override
+		public void cancelEdit() {
+			super.cancelEdit();
+
+			setText((String) getItem());
+			setGraphic(null);
+		}
+
+		@Override
+		public void updateItem(String item, boolean empty) {
+			super.updateItem(item, empty);
+
+			if (empty) {
+				setText(null);
+				setGraphic(null);
+			} else {
+				if (isEditing()) {
+					if (textField != null) {
+						textField.setText(getString());
+					}
+					setGraphic(textField);
+					setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+				} else {
+					setText(getString());
+					setContentDisplay(ContentDisplay.TEXT_ONLY);
+				}
+			}
+		}
+
+		private void createTextField() {
+			textField = new TextField(getString());
+			textField.setMinWidth(this.getWidth() - this.getGraphicTextGap()
+					* 2);
+
+			textField.focusedProperty().addListener(
+					new ChangeListener<Boolean>() {
+						@Override
+						public void changed(
+								ObservableValue<? extends Boolean> arg0,
+								Boolean arg1, Boolean arg2) {
+							if (!arg2) {
+								commitEdit(textField.getText());
+							}
+						}
+					});
+
+			textField.setOnKeyPressed(new EventHandler<KeyEvent>() {
+				@Override
+				public void handle(KeyEvent t) {
+					if (t.getCode() == KeyCode.ENTER) {
+						commitEdit(textField.getText());
+					} else if (t.getCode() == KeyCode.ESCAPE) {
+						cancelEdit();
+					} else if (t.getCode() == KeyCode.TAB) {
+						commitEdit(textField.getText());
+						TableColumn nextColumn = getNextColumn(!t.isShiftDown());
+					if (nextColumn != null) {
+						getTableView().edit(getTableRow().getIndex(),
+								nextColumn);
+					}
+					
+					}
+				}
+
+			});
+		}
+
+		private String getString() {
+			return getItem() == null ? "" : getItem().toString();
+		}
+
+		private TableColumn<Person, ?> getNextColumn(boolean forward) {
+			List<TableColumn<Person, ?>> columns = new ArrayList<>();
+			for (TableColumn<Person, ?> column : getTableView().getColumns()) {
+				columns.addAll(getLeaves(column));
+			}
+			// There is no other column that supports editing.
+			if (columns.size() < 2) {
+				return null;
+			}
+			int currentIndex = columns.indexOf(getTableColumn());
+			int nextIndex = currentIndex;
+			if (forward) {
+				nextIndex++;
+				if (nextIndex > columns.size() - 1) {
+					nextIndex = 0;
+				}
+			} else {
+				nextIndex--;
+				if (nextIndex < 0) {
+					nextIndex = columns.size() - 1;
+				}
+			}
+			return columns.get(nextIndex);
+		}
+
+		private List<TableColumn<Person, ?>> getLeaves(
+				TableColumn<Person, ?> root) {
+			List<TableColumn<Person, ?>> columns = new ArrayList<>();
+			if (root.getColumns().isEmpty()) {
+				// We only want the leaves that are editable.
+				if (root.isEditable()) {
+					columns.add(root);
+				}
+				return columns;
+			} else {
+				for (TableColumn<Person, ?> column : root.getColumns()) {
+					columns.addAll(getLeaves(column));
+				}
+				return columns;
+			}
+		}
+	}
 }
