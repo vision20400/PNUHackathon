@@ -10,6 +10,8 @@ import java.nio.file.Paths;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
@@ -20,7 +22,6 @@ import javax.json.*;
 import javax.json.stream.JsonParser;
 
 import com.jfoenix.controls.JFXTabPane;
-
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
@@ -52,7 +53,10 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -109,9 +113,15 @@ public class MainController implements Initializable {
 	@FXML
 	private Button newFilebtn;
 	@FXML
+	private Button deletebtn;
+	@FXML
 	private Button mappingbtn;
 	@FXML
 	private Button template1btn;
+	@FXML
+	private Button savebtn;
+	@FXML
+	private Button printbtn;
 	@FXML
 	private HBox mergeHBox;
 	@FXML
@@ -129,6 +139,8 @@ public class MainController implements Initializable {
 	@FXML
 	private GridPane associatedGrid;
 	@FXML
+	private Map <String, Tab> openTabs = new HashMap<>();
+	@FXML
 	private BorderPane mappingtab;
 	
 	
@@ -141,6 +153,9 @@ public class MainController implements Initializable {
 	@FXML
 	private BorderPane mapping;
 	private Graph graph;
+	
+	private static boolean fromTreeToMapping = false;
+    final DragContext dragContext = new DragContext();
 	
 	private VBox timeline = new VBox();
 
@@ -157,9 +172,7 @@ public class MainController implements Initializable {
     JsonReader relatedJSONReader;
     JsonObject relatedJSONObject;
     JsonArray relatedJSONRoot;
-	
-	private static boolean fromTreeToMapping = false;
-    final DragContext dragContext = new DragContext();
+
 
     class DragContext {
 
@@ -240,11 +253,10 @@ public class MainController implements Initializable {
             double offsetY = event.getScreenY() + dragContext.y;
 
             // adjust the offset in case we are zoomed
-            double scale3 = graph.getScale();
+            double scale = graph.getScale();
 
-            offsetX /= scale3;
-            offsetY /= scale3;
-
+            offsetX /= scale;
+            offsetY /= scale;
             cell.relocate(offsetX, offsetY);
 	        graph.endUpdate();
 	        
@@ -290,179 +302,208 @@ public class MainController implements Initializable {
 		//������ �߰�
 		newFilebtn.setOnAction((event) -> {
 			final HTMLEditor htmlEditor = new HTMLEditor();
-	        htmlEditor.setPrefHeight(245);
+			htmlEditor.setPadding(new Insets(0, 0, 0, 0));
 			TabSetText n_tab = new TabSetText();
-			Tab tab = n_tab.createEditableTab("�� ����");
+			Tab tab = n_tab.createEditableTab("새 문서");
 			
 		    //TextArea textArea = new TextArea();
 		    //textArea.appendText("");
 		    tab.setContent(htmlEditor);
 		    mainTab.getTabs().add(tab);
 		});
-				
-		//���� �����,���̱�
-		mappingbtn.setOnAction((event) -> {
-			if(split.getDividerPositions()[1] > 0.7)
-				split.setDividerPositions(split.getDividerPositions()[0], 0.7);
-			else
-				split.setDividerPositions(split.getDividerPositions()[0], 1.0);
-		});
-		
-		//���� ����
-		openFile.setOnAction(new EventHandler<ActionEvent>() {
-		    public void handle(ActionEvent event) {
-		        FileChooser newFileChooser = new FileChooser();
-		        File newFile = newFileChooser.showOpenDialog(null);
-		        if (newFile != null) {
-		            openNewTab(newFile.getPath());
-		        }
-		    }
-		});
-		//������ �߰�
-		newFile.setOnAction((event) -> {
-			final HTMLEditor htmlEditor = new HTMLEditor();
-	        htmlEditor.setPrefHeight(245);
-			TabSetText n_tab = new TabSetText();
-			Tab tab = n_tab.createEditableTab("�� ����");
-
-		    //TextArea textArea = new TextArea();
-		    //textArea.appendText("");
-		    tab.setContent(htmlEditor);
-		    mainTab.getTabs().add(tab);
-		});
-		//����
-		save.setOnAction((event) -> {
-			if (isTabExist()) {
-	            FileChooser saveFileChooser = new FileChooser();
-	            File saveFile = saveFileChooser.showSaveDialog(null);
-	            if (saveFile != null) {
-	              saveFile(saveFile);
-	            }
-	        }
-		});
-		//����Ʈ
-		print.setOnAction((event) -> {
-			if (isTabExist()) {
-		        PrinterJob printerJob = PrinterJob.createPrinterJob();
-		        if (printerJob.showPrintDialog(null)){
-		            boolean success = printerJob.printPage(mainTab.getSelectionModel().getSelectedItem().getContent());
-		            if (success) {
-		                printerJob.endJob();
-		            }
-		        }
-		    }
+		deletebtn.setOnAction((event) -> {
+		    mainTab.getTabs().remove(mainTab.getSelectionModel().getSelectedItem());
         });
-		//�Ű椤��
-		newWindow.setOnAction((event) -> {
-	        System.out.println("newWindow clicked");
-	        /*
-			Stage stage = new Stage();
-			stage.setTitle(mainTab.getSelectionModel().getSelectedItem().getText());
-			TextArea textArea = (TextArea)mainTab.getSelectionModel().getSelectedItem().getContent();
-			TextArea newArea = new TextArea(textArea.getText());
-			newArea.setEditable(false);
-			stage.setScene(new Scene(newArea, 1000, 800));
-			stage.show();      
-			
-			*/
-		});
-		//Ʈ�� ������ �ι�  Ŭ���� -���� ���� ��
-		treeV.setOnMouseClicked(new EventHandler<MouseEvent>()
-		{
-		    @Override
-		    public void handle(MouseEvent mouseEvent)
-		    {
-		        if(mouseEvent.getClickCount() == 1)
-		        {
-		            TreeItem<PathItem> item = treeV.getSelectionModel().getSelectedItem();
-		            if (item == null)
-		            	return;
-		            
-		            if(item.isLeaf()) {
-		            	String clickpath = getTreePath(item);
-			            System.out.println("Selected Text : " + clickpath);
-			            openNewTab(clickpath);
-		            }
-		            else {
-		            	String clickpath = getTreePath(item);
-		            	System.out.println("Selected Text : " + clickpath);
-		            	openallfileTab(clickpath);
-		            }
-		        }
-		        
-		        if(mouseEvent.getClickCount() == 2 && mergeToggle.isSelected())
-		        {
-		            TreeItem<PathItem> item = treeV.getSelectionModel().getSelectedItem();
-		            if(mergeHBox.hasProperties()) {
-		            	mergebutton.setDisable(true);
-		            }
-		            else {
-		            	mergebutton.setDisable(false);
-		            }
-		            if (item == null)
-		            	return;
-		            
-		            if(item.isLeaf()) {
-		            	String clickpath = getTreePath(item);
-			            System.out.println("Selected Text : " + clickpath);
-			            addMergeFile(clickpath);
-		            }
-		        }
-		    }
-		 });
-		
-		mergebutton.setOnAction((event) ->{
-			final HTMLEditor htmlEditor = new HTMLEditor();
-	        htmlEditor.setPrefHeight(245);
-			TabSetText n_tab = new TabSetText();
-			Tab tab = n_tab.createEditableTab("merge result");
-			
-			Thread thread = new Thread() {
-				public void run() {
-					Platform.runLater(() -> {
-						if(!mergeHBox.getChildren().isEmpty()) {
-							System.out.println("1");
-							while(!addallcontents.isEmpty()) {
-								File txtfile = new File(addallcontents.pop());
-								System.out.println("delete\n");
-								try {
-									BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(txtfile)));
-									String line;
-									textmerge += "file : " + txtfile.getName() + "<br/>";
-								    while((line = br.readLine()) != null){
-								      textmerge += line + "<br/>";
-								    }
-								} catch (FileNotFoundException e) {
-									e.printStackTrace();
-								} catch (IOException e) {
-								    e.printStackTrace();
+				
+		//맵핑 숨기기,보이기
+				mappingbtn.setOnAction((event) -> {
+					if(split.getDividerPositions()[1] > 0.7)
+						split.setDividerPositions(split.getDividerPositions()[0], 0.7);
+					else
+						split.setDividerPositions(split.getDividerPositions()[0], 1.0);
+				});
+				
+				//파일 오픈
+				openFile.setOnAction(new EventHandler<ActionEvent>() {
+				    public void handle(ActionEvent event) {
+				        FileChooser newFileChooser = new FileChooser();
+				        File newFile = newFileChooser.showOpenDialog(null);
+				        if (newFile != null) {
+				            openNewTab(newFile.getPath());
+				        }
+				    }
+				});
+				//새파일 추가
+				newFile.setOnAction((event) -> {
+					final HTMLEditor htmlEditor = new HTMLEditor();
+			        htmlEditor.setPrefHeight(245);
+					TabSetText n_tab = new TabSetText();
+					Tab tab = n_tab.createEditableTab("새 문서");
+
+				    //TextArea textArea = new TextArea();
+				    //textArea.appendText("");
+				    tab.setContent(htmlEditor);
+				    mainTab.getTabs().add(tab);
+				});
+				//저장
+				save.setOnAction((event) -> {
+					if (isTabExist()) {
+			            FileChooser saveFileChooser = new FileChooser();
+			            File saveFile = saveFileChooser.showSaveDialog(null);
+			            if (saveFile != null) {
+			              saveFile(saveFile);
+			            }
+			        }
+				});
+				
+				savebtn.setOnAction((event) -> {
+					if (isTabExist()) {
+			            FileChooser saveFileChooser = new FileChooser();
+			            File saveFile = saveFileChooser.showSaveDialog(null);
+			            if (saveFile != null) {
+			              saveFile(saveFile);
+			            }
+			        }
+				});
+				//프린트
+				print.setOnAction((event) -> {
+					if (isTabExist()) {
+				        PrinterJob printerJob = PrinterJob.createPrinterJob();
+				        if (printerJob.showPrintDialog(null)){
+				            boolean success = printerJob.printPage(mainTab.getSelectionModel().getSelectedItem().getContent());
+				            if (success) {
+				                printerJob.endJob();
+				            }
+				        }
+				    }
+		        });
+				
+				printbtn.setOnAction((event) -> {
+					if (isTabExist()) {
+				        PrinterJob printerJob = PrinterJob.createPrinterJob();
+				        if (printerJob.showPrintDialog(null)){
+				            boolean success = printerJob.printPage(mainTab.getSelectionModel().getSelectedItem().getContent());
+				            if (success) {
+				                printerJob.endJob();
+				            }
+				        }
+				    }
+		        });
+				
+				//신경ㄴㄴ
+				newWindow.setOnAction((event) -> {
+			        System.out.println("newWindow clicked");
+			        /*
+					Stage stage = new Stage();
+					stage.setTitle(mainTab.getSelectionModel().getSelectedItem().getText());
+					TextArea textArea = (TextArea)mainTab.getSelectionModel().getSelectedItem().getContent();
+					TextArea newArea = new TextArea(textArea.getText());
+					newArea.setEditable(false);
+					stage.setScene(new Scene(newArea, 1000, 800));
+					stage.show();      
+					
+					*/
+				});
+				//트리 아이템 두번  클릭시 -아직 구현 ㄴ
+				treeV.setOnMouseClicked(new EventHandler<MouseEvent>()
+				{
+				    @Override
+				    public void handle(MouseEvent mouseEvent)
+				    {
+				        if(mouseEvent.getClickCount() == 2 && !(mergeToggle.isSelected()))
+				        {
+				            TreeItem<PathItem> item = treeV.getSelectionModel().getSelectedItem();
+				            if (item == null)
+				            	return;
+				            
+				            if(item.isLeaf()) {
+				            	String clickpath = getTreePath(item);
+					            System.out.println("Selected Text : " + clickpath);
+					            openNewTab(clickpath);
+				            }
+				            else {
+				            	String clickpath = getTreePath(item);
+				            	System.out.println("Selected Text : " + clickpath);
+				            	openallfileTab(clickpath);
+				            }
+				        }
+				        
+				        if(mouseEvent.getClickCount() == 1 && mergeToggle.isSelected())
+				        {
+				            TreeItem<PathItem> item = treeV.getSelectionModel().getSelectedItem();
+				            if(mergeHBox.hasProperties()) {
+				            	mergebutton.setDisable(true);
+				            }
+				            else {
+				            	mergebutton.setDisable(false);
+				            }
+				            if (item == null)
+				            	return;
+				            
+				            if(item.isLeaf()) {
+				            	String clickpath = getTreePath(item);
+					            System.out.println("Selected Text : " + clickpath);
+					            addMergeFile(clickpath);
+				            }
+				        }
+				    }
+				 });
+				
+				mergebutton.setOnAction((event) ->{
+					final HTMLEditor htmlEditor = new HTMLEditor();
+			        htmlEditor.setPrefHeight(245);
+					TabSetText n_tab = new TabSetText();
+					Tab tab = n_tab.createEditableTab("merge result");
+					
+					Thread thread = new Thread() {
+						public void run() {
+							Platform.runLater(() -> {
+								if(!mergeHBox.getChildren().isEmpty()) {
+									System.out.println("1");
+									while(!addallcontents.isEmpty()) {
+										File txtfile = new File(addallcontents.pop());
+										System.out.println("delete\n");
+										try {
+											BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(txtfile)));
+											String line;
+											textmerge += "file : " + txtfile.getName() + "<br/>";
+										    while((line = br.readLine()) != null){
+										      textmerge += line + "<br/>";
+										    }
+										} catch (FileNotFoundException e) {
+											e.printStackTrace();
+										} catch (IOException e) {
+										    e.printStackTrace();
+										}
+									}
 								}
-							}
+								htmlEditor.setHtmlText(textmerge);
+								tab.setContent(htmlEditor);
+								mainTab.getTabs().add(tab);
+								addallcontents.printStack();
+								mergeHBox.getChildren().clear();
+								addallcontents.clear();
+								textmerge = "";
+								addallcontents.printStack();
+							});
 						}
-						htmlEditor.setHtmlText(textmerge);
-						tab.setContent(htmlEditor);
-						mainTab.getTabs().add(tab);
-						mergeHBox.getChildren().clear();
-						addallcontents.clear();
-					});
-				}
-			};
-			thread.start();
-		});
-		
-		template1btn.setOnAction((event) -> {
-			final HTMLEditor htmlEditor = new HTMLEditor();
-	        htmlEditor.setPrefHeight(245);
-			TabSetText n_tab = new TabSetText();
-			Tab tab = n_tab.createEditableTab("untitled");
-			Synopsis txt = new Synopsis();
-			String Synopsis = txt.template();
-		    //TextArea textArea = new TextArea();
-		    //textArea.appendText("");
-			htmlEditor.setHtmlText(Synopsis);
-		    tab.setContent(htmlEditor);
-		    mainTab.getTabs().add(tab);
-		});
+					};
+					thread.start();
+				});
+				
+				template1btn.setOnAction((event) -> {
+					final HTMLEditor htmlEditor = new HTMLEditor();
+			        htmlEditor.setPrefHeight(245);
+					TabSetText n_tab = new TabSetText();
+					Tab tab = n_tab.createEditableTab("untitled");
+					Synopsis txt = new Synopsis();
+					String Synopsis = txt.template();
+				    //TextArea textArea = new TextArea();
+				    //textArea.appendText("");
+					htmlEditor.setHtmlText(Synopsis);
+				    tab.setContent(htmlEditor);
+				    mainTab.getTabs().add(tab);
+				});
 		
 		profile.setOnAction((event)->{
 			try{
@@ -704,11 +745,13 @@ public class MainController implements Initializable {
 		File txtfile = new File(path);
 		Label text = new Label(txtfile.getName());
 		text.setStyle("	-fx-pref-width: 70; -fx-pref-height: 30;");
+		Background background = new Background(new BackgroundFill(Color.rgb(200,230,250,1), new CornerRadii(10.0), new Insets(-8.0)));
+		text.setBackground(background);
 		addallcontents.push(path);
 		mergeHBox.getChildren().add(text);
 	}
 
-	//���� ����
+	//파일 저장
 		 
 	private void saveFile(File saveFile) {
 		final TextArea htmlCode = new TextArea();
@@ -726,13 +769,13 @@ public class MainController implements Initializable {
 	
 	}
 
-	//�� ��������
+	//탭 존제여부
 	private boolean isTabExist() {
 		return mainTab.getSelectionModel().getSelectedItem() != null;
 	}
 
 
-	//������ ���� �ǿ� �߰�
+	//선택한 파일 탭에 추가
 		public void openNewTab(String path){
 			File txtFile = new File(path);
 			final HTMLEditor htmlEditor = new HTMLEditor();
@@ -742,25 +785,42 @@ public class MainController implements Initializable {
 			Tab tab = n_tab.createEditableTab(txtFile.getName());
 		    
 		    try {
-			       // ����Ʈ ������ �����б�
-			        String filePath = path; // ��� ����
-			        FileInputStream fileStream = null; // ���� ��Ʈ��
+			       // 바이트 단위로 파일읽기
+			        String filePath = path; // 대상 파일
+			        FileInputStream fileStream = null; // 파일 스트림
 			        
-			        fileStream = new FileInputStream( filePath );// ���� ��Ʈ�� ����
-			        //���� ����
+			        fileStream = new FileInputStream( filePath );// 파일 스트림 생성
+			        //버퍼 선언
 			        byte[ ] readBuffer = new byte[fileStream.available()];
 			        while (fileStream.read( readBuffer ) != -1){}
 			       
 			        htmlEditor.setHtmlText(new String(readBuffer));
-			        fileStream.close(); //��Ʈ�� �ݱ�
+			        fileStream.close(); //스트림 닫기
 			    } catch (Exception e) {
+			    	
 				e.getStackTrace();
 			    }
 		    
 		    
 		    tab.setContent(htmlEditor);
-		    //tabpane ���� �߰������� ���� �������־����� �ڵ����� �� tab���� ������ ������ ��(�̿ϼ�)
-		    mainTab.getTabs().add(tab);
+		    //tabpane 새로 추가했을때 원래 눌러져있었으면 자동으로 그 tab으로 가도록 만들어야 됨(미완성)
+		    if(openTabs.containsKey(path)) {
+		    	mainTab.getSelectionModel().select(openTabs.get(tab));
+		    }
+		    else {
+		    	mainTab.getTabs().add(tab);
+		    	openTabs.put(path, tab);
+		    	tab.setOnClosed(e -> openTabs.remove(path));
+		    }
+		   
+		    //System.out.println(mainTab.getContextMenu().getItems().toString());
+		    /*if(mainTab.getTabs().contains(tab)) {
+		    	System.out.println("1");
+		    	
+		    }
+		    else {
+		    	mainTab.getTabs().add(tab);
+		    }*/
 		 }
 		public void openallfileTab(String path) {
 			File dir = new File(path);
@@ -808,11 +868,18 @@ public class MainController implements Initializable {
 			}
 			htmlEditor.setHtmlText(allfile);
 			tab.setContent(htmlEditor);
-			mainTab.getTabs().add(tab);
+			if(openTabs.containsKey(path)) {
+		    	mainTab.getSelectionModel().select(openTabs.get(tab));
+		    }
+		    else {
+		    	mainTab.getTabs().add(tab);
+		    	openTabs.put(path, tab);
+		    	tab.setOnClosed(e -> openTabs.remove(path));
+		    }
 		}
 		
 		
-	//���丮�� Ʈ�� �����	
+	//디렉토리로 트리 만들기	
 	public TreeItem<String> getNodesForDirectory(File directory) {
 		   //Returns a TreeItem representation of the specified directory
            TreeItem<String> root = new TreeItem<String>(directory.getName());
@@ -830,7 +897,7 @@ public class MainController implements Initializable {
            return root;
 	 }
 	
-	// ������ Ʈ�������� ��� ���ϱ�
+	// 선택한 트리아이템 경로 구하기
 	public String getTreePath(TreeItem<PathItem> item) {
 		TreeItem<PathItem> cur_item = item;
 		String path = "";
@@ -847,7 +914,6 @@ public class MainController implements Initializable {
 		
 		return path;
 	}
-	
 
 
 	   public void clickHandler() {
@@ -940,7 +1006,6 @@ public class MainController implements Initializable {
         }
         return false;
     }
-	//drag and drop ����
 	private void setDragDropEvent(final PathTreeCell cell) {
         // The drag starts on a gesture source
         cell.setOnDragDetected(event -> {
