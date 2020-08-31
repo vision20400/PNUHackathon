@@ -108,7 +108,7 @@ public class MouseGestures {
                     cell.setLayoutY(prevPositions.get(cell).y);
 
                     graph.beginUpdate();
-                    graph.getModel().addEdge(String.valueOf(cell.cellID), String.valueOf(_cell.cellID));
+                    graph.getModel().addEdge(String.valueOf(cell.cellID), String.valueOf(_cell.cellID),"");
                     graph.endUpdate();
 
                     break;
@@ -133,7 +133,7 @@ public class MouseGestures {
         graph.beginUpdate();
 
         
-        model.addEdge(sourceId,targetId);
+        model.addEdge(sourceId,targetId,"");
         
 
         graph.endUpdate();

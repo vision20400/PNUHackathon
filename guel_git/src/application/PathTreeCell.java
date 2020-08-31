@@ -1,6 +1,7 @@
 package application;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.FileAlreadyExistsException;
@@ -9,9 +10,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
+import java.util.regex.Pattern;
 
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
@@ -25,7 +29,9 @@ import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -34,12 +40,21 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
+import javafx.scene.web.HTMLEditor;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import test.CellType;
+import test.FileCell;
+import test.LabelCell;
+
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
+
+import com.jfoenix.controls.JFXTabPane;
 
 public class PathTreeCell extends TreeCell<PathItem>{
     private TextField textField;
@@ -49,13 +64,18 @@ public class PathTreeCell extends TreeCell<PathItem>{
     private ContextMenu fileMenu = new ContextMenu();
     private ExecutorService service;
     private static List<String> imageList;
+    private VBox vbox;
+    private JFXTabPane mainTab;
+    private Map <String, Tab> openTabs = new HashMap<>();
     static {
         imageList = Arrays.asList("BMP", "DIB", "RLE", "JPG", "JPEG" , "JPE", "JFIF"
         , "GIF", "EMF", "WMF", "TIF", "TIFF", "PNG", "ICO");
     }
 
-    public PathTreeCell(final StringProperty messageProp) {
+    public PathTreeCell(final StringProperty messageProp , VBox vbox, JFXTabPane mainTab) {
         this.messageProp = messageProp;
+        this.vbox = vbox;
+        this.mainTab = mainTab;
         MenuItem expandMenu = new MenuItem("Expand");
         expandMenu.setOnAction((ActionEvent event) -> {
             getTreeItem().setExpanded(true);
@@ -107,7 +127,7 @@ public class PathTreeCell extends TreeCell<PathItem>{
                     return newDir;
             }
         });
-        //create new file(txt) »õ·Î¿î txtÆÄÀÏ »ý¼º
+        //create new file(txt) ï¿½ï¿½ï¿½Î¿ï¿½ txtï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         MenuItem addtxtfile = new MenuItem("AddTXTFile");
         addtxtfile.setOnAction(new EventHandler<ActionEvent>() {
         	public void handle(ActionEvent t) {
@@ -137,7 +157,7 @@ public class PathTreeCell extends TreeCell<PathItem>{
         		
         	}
         });
-        //ÆÄÀÏ ºÒ·¯¿À±â(ÇÏÁö¸¸ Áö±ÝÀº ¸·ÇôÀÖÀ½, ·ÎÄÃ µð·ºÅä¸®¿¡¼­ ºÒ·¯¿À´Â °ÍÀÌ±â ¶§¹®¿¡)
+        //ï¿½ï¿½ï¿½ï¿½ ï¿½Ò·ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ä¸®ï¿½ï¿½ï¿½ï¿½ ï¿½Ò·ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì±ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
         MenuItem addfile = new MenuItem("AddFile");
         addfile.setOnAction(new EventHandler<ActionEvent>() {
         	public void handle(ActionEvent t) {
@@ -178,7 +198,7 @@ public class PathTreeCell extends TreeCell<PathItem>{
                 }
             });
         });
-        //ÇöÀç µð·ºÅä¸®¿¡ ÀÖ´Â ÆÄÀÏ ÀÌ¸§ ¹Ù²Ù±â(±¸ÇöÁß)
+        //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ä¸®ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¸ï¿½ ï¿½Ù²Ù±ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
         MenuItem rename = new MenuItem("rename");
         rename.setOnAction(event -> {
         	//rename the file
@@ -213,18 +233,44 @@ public class PathTreeCell extends TreeCell<PathItem>{
         			});
         		}
         	};
-        	thread.start();
-        	/*
-            task.setOnSucceeded(value -> {
-                    Platform.runLater(() -> {
-                        TreeItem<PathItem> item = PathTreeItem.createNode(new PathItem(target));
-                        cell.getTreeItem().getChildren().add(item);
-                    });
-                });*/
+        	
         });
+        
+        MenuItem addtimeline = new MenuItem("timeline");
+        addtimeline.setOnAction(new EventHandler<ActionEvent>() {
+      		 
+            @Override
+            public void handle(ActionEvent event) {
+            	String path = getTreeItem().getValue().getPath().toString();
+            	
+            	
+        		
+        		String separator = "\\";
+    	    	String[] arr=path.replaceAll(Pattern.quote(separator), "\\\\").split("\\\\");
+    	        FileCell cell = new FileCell(arr[arr.length - 1]);
+    	        
+    	        cell.setPath(path);
+    	        cell.setOnMouseClicked(new EventHandler<MouseEvent>()
+    			{
+    			    @Override
+    			    public void handle(MouseEvent mouseEvent)
+    			    {
+    			        if(mouseEvent.getClickCount() == 2){
+    				       // openNewTab(cell.getPath());
+    			        	System.out.println(cell.getPath());
+    			        }
+    			    }
+    			 });
+    	        
+        		vbox.getChildren().add(cell);
+         	           	
+            }
+        });	
+        	
+            
         dirMenu.getItems().addAll(expandMenu, expandAllMenu, addMenu, addtxtfile, addfile);
-        fileMenu.getItems().addAll(deleteMenu, rename, copy);
-    }
+        fileMenu.getItems().addAll(deleteMenu, rename, copy, addtimeline);
+    } 
 
     @Override
     protected void updateItem(PathItem item, boolean empty) {
@@ -327,4 +373,52 @@ public class PathTreeCell extends TreeCell<PathItem>{
         imageView.setPreserveRatio(true);
         return imageView;
     }
+    
+    public void openNewTab(String path){
+		File txtFile = new File(path);
+		final HTMLEditor htmlEditor = new HTMLEditor();
+        htmlEditor.setPrefHeight(245);
+        
+		TabSetText n_tab = new TabSetText();
+		Tab tab = n_tab.createEditableTab(txtFile.getName());
+	    
+	    try {
+		       // ë°”ì´íŠ¸ ë‹¨ìœ„ë¡œ íŒŒì¼ì½ê¸°
+		        String filePath = path; // ëŒ€ìƒ íŒŒì¼
+		        FileInputStream fileStream = null; // íŒŒì¼ ìŠ¤íŠ¸ë¦¼
+		        
+		        fileStream = new FileInputStream( filePath );// íŒŒì¼ ìŠ¤íŠ¸ë¦¼ ìƒì„±
+		        //ë²„í¼ ì„ ì–¸
+		        byte[ ] readBuffer = new byte[fileStream.available()];
+		        while (fileStream.read( readBuffer ) != -1){}
+		       
+		        htmlEditor.setHtmlText(new String(readBuffer));
+		        fileStream.close(); //ìŠ¤íŠ¸ë¦¼ ë‹«ê¸°
+		    } catch (Exception e) {
+		    	
+			e.getStackTrace();
+		    }
+	    
+	    
+	    tab.setContent(htmlEditor);
+	    //tabpane ìƒˆë¡œ ì¶”ê°€í–ˆì„ë•Œ ì›ëž˜ ëˆŒëŸ¬ì ¸ìžˆì—ˆìœ¼ë©´ ìžë™ìœ¼ë¡œ ê·¸ tabìœ¼ë¡œ ê°€ë„ë¡ ë§Œë“¤ì–´ì•¼ ë¨(ë¯¸ì™„ì„±)
+	    if(openTabs.containsKey(path)) {
+	    	mainTab.getSelectionModel().select(openTabs.get(tab));
+	    }
+	    else {
+	    	mainTab.getTabs().add(tab);
+	    	openTabs.put(path, tab);
+	    	tab.setOnClosed(e -> openTabs.remove(path));
+	    }
+	   
+	    //System.out.println(mainTab.getContextMenu().getItems().toString());
+	    /*if(mainTab.getTabs().contains(tab)) {
+	    	System.out.println("1");
+	    	
+	    }
+	    else {
+	    	mainTab.getTabs().add(tab);
+	    }*/
+	 }
+    
 }
